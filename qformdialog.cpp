@@ -6,15 +6,24 @@
 #include <QLabel>
 #include <QLineEdit>
 
-QFormDialog::QFormDialog(QWidget *parent) :
+QFormDialog::QFormDialog(QWidget *parent, SERIALREADER* serialport) :
     QDialog(parent),
-    ui(new Ui::QFormDialog)
+    ui(new Ui::QFormDialog),
+    m_serialport(serialport)
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(efidaq::DEFAULT_LOGO_FILEPATH));
 
-    connect(ui->okButton, SIGNAL(clicked(bool)), SLOT(handleOkButtonClicked(bool)));
+    connect(ui->updateButton, SIGNAL(clicked(bool)), SLOT(handleUpdateButtonClicked(bool)));
     connect(ui->cancelButton, SIGNAL(clicked(bool)), SLOT(handleCancelButtonClicked(bool)));
+
+//    m_arduinoValues= m_serialport->getArduinoValues();
+    //THIS IS FOR TESTING PURPOSES BELOW
+    m_arduinoValues.push_back("Hello");
+    m_arduinoValues.push_back("Hi");
+    m_arduinoValues.push_back("What's up");
+    m_arduinoValues.push_back("Nothing");
+    m_arduinoValues.push_back("Change Me");
 }
 
 QFormDialog::~QFormDialog()
@@ -57,17 +66,31 @@ QSet<std::pair<QString, QString>> QFormDialog::getPairs() const
     return m_pairs;
 }
 
-void QFormDialog::handleOkButtonClicked(bool)
+QVector<QString> QFormDialog::getArduinoValues() const
 {
-    QSet<std::pair<QString, QString>> pairs;
-    for (auto it = m_deletionList.begin(); it != m_deletionList.end(); it++)
+    return m_arduinoValues;
+}
+
+void QFormDialog::handleUpdateButtonClicked(bool)
+{
+    int index=0;
+    for(auto it = m_pairs.begin(); it!= m_pairs.end(); it++)
     {
-        std::pair<QString, QString> pair;
-        pair.first = it->first->text();
-        pair.second = it->second->text();
-        pairs.insert(pair);
+        if(index<m_arduinoValues.size() && it->second != m_arduinoValues[index])
+            int w;//m_serialport->SendSignal(i+6,it->second)
+        index++;
+
     }
-    m_pairs = pairs;
+
+//    QSet<std::pair<QString, QString>> pairs;
+//    for (auto it = m_deletionList.begin(); it != m_deletionList.end(); it++)
+//    {
+//        std::pair<QString, QString> pair;
+//        pair.first = it->first->text();
+//        pair.second = it->second->text();
+//        pairs.insert(pair);
+//    }
+//    m_pairs = pairs;
     accept();
 }
 

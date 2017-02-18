@@ -160,19 +160,22 @@ void MAINRUNTEST::closeEvent(QCloseEvent *event)
 
 void MAINRUNTEST::handleParametersEditTriggered()
 {
-    QFormDialog pform(this);
-    pform.addPair(QString("a"), QString("b"));
-    pform.addPair(QString("c"), QString("d"));
-    pform.addPair(QString("e"), QString("f"));
-    pform.addPair(QString("g"), QString("h"));
+    //QVector arduinoValues= ->getArduinoValues();
+
+    QFormDialog pform(this, nullptr);
+    pform.addPair(QString("Idle Fuel Ratio"), QString(pform.getArduinoValues()[0]));
+    pform.addPair(QString("Current Fuel Ratio"), QString(pform.getArduinoValues()[1]));
+    pform.addPair(QString("Reset Fuel Ratio"), QString(pform.getArduinoValues()[2]));
+    pform.addPair(QString("Desired RPM"), QString(pform.getArduinoValues()[3]));
+    pform.addPair(QString("Desired O2"), QString(pform.getArduinoValues()[4]));
     pform.exec();
-    QSet<std::pair<QString, QString>> results = pform.getPairs();
-    QFormDialog pform2(this);
-    for (auto it = results.begin(); it != results.end(); it++)
-    {
-        pform2.addPair(*it);
-    }
-    pform2.exec();
+//    QSet<std::pair<QString, QString>> results = pform.getPairs();
+//    QFormDialog pform2(this);
+//    for (auto it = results.begin(); it != results.end(); it++)
+//    {
+//        pform2.addPair(*it);
+//    }
+//    pform2.exec();
 }
 
 void MAINRUNTEST::handleIdleFuelRatioSetTriggered()

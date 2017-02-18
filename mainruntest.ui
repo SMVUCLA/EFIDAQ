@@ -72,11 +72,6 @@
      <addaction name="actionMAX_SAMPLE_RATE"/>
      <addaction name="actionCOLD_START_VALUE"/>
      <addaction name="actionCUTOFF_RPM"/>
-     <addaction name="actionIDLE_FUEL_RATIO"/>
-     <addaction name="actionCURRENT_FUEL_RATIO"/>
-     <addaction name="actionRESET_FUEL_RATIO"/>
-     <addaction name="actionDESIRED_RPM"/>
-     <addaction name="actionDESIRED_O2"/>
     </widget>
     <addaction name="actionRESET"/>
     <addaction name="menuSYNCHRONIZE"/>
