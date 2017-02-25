@@ -18,6 +18,8 @@ public:
     unsigned long long availableData(QByteArray& data);
     QString selectPort();
     QString portName() const;
+    unsigned long long write(const QByteArray& data);
+
 private:
     QByteArray* m_data;
     QSerialPort* m_serialPort;
