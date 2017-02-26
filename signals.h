@@ -2,6 +2,7 @@
 #define SIGNALS_H
 
 #include <QTimer>
+#include <QVector>
 
 #define NUMBER_OF_AFR_ROWS 11
 #define NUMBER_OF_AFR_COLUMNS 16
@@ -21,12 +22,12 @@ public:
     int startSendingData();
     int stopSendingData();
     void synchronizeParamters();
-    int sendTable(const QVector<QVector<QString>> &afr_table);
+    int sendTable(const QVector<QVector<float>> &afr_table);
     QVector<float> receiveTable(const QVector<QVector<int>> &afr_requests);
     int setIdleFuelRatio(float value);
     int setCurrentFuelRatio(float value);
     int setResetFuelRatio(float value);
-    int setDesiredRPM(float value);
+    int setDesiredRPM(int32_t value);
     int setDesiredO2(float value);
 
 private:

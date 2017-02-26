@@ -10,7 +10,7 @@ void Signals::reset()
 {
     uint8_t buffer[1];
     buffer[0] = 0;
-    QByteArray qBuffer(buffer,1);
+    QByteArray qBuffer((char*)buffer,1);
     m_serialWriter->write(qBuffer);
 
     return;
@@ -20,7 +20,7 @@ int Signals::startSendingData()
 {
     uint8_t buffer[1];
     buffer[0] = 1;
-    QByteArray qBuffer(buffer,1);
+    QByteArray qBuffer((char*)buffer,1);
     m_serialWriter->write(qBuffer);
 
     QElapsedTimer timer;
@@ -39,8 +39,8 @@ int Signals::startSendingData()
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 1 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -48,7 +48,7 @@ int Signals::startSendingData()
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -60,7 +60,7 @@ int Signals::stopSendingData()
 {
     uint8_t buffer[1];
     buffer[0] = 2;
-    QByteArray qBuffer(buffer,1);
+    QByteArray qBuffer((char*)buffer,1);
     m_serialWriter->write(qBuffer);
 
     QElapsedTimer timer;
@@ -79,8 +79,8 @@ int Signals::stopSendingData()
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 2 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -88,7 +88,7 @@ int Signals::stopSendingData()
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -117,7 +117,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
     dataWrapper.data.ID = 4;
     QByteArray qbuffer;
 
-    union Acknowledgemnent
+    union Acknowledgement
     {
         char buffer[7];
         struct Data
@@ -133,7 +133,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
     QElapsedTimer timer;
     timer.start();
     QByteArray data;
-    bool receivedFlag = flag;
+    bool receivedFlag = false;
     int i;
     int transmissions;
     char* dataAddress;
@@ -144,7 +144,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
         dataWrapper.data.colNum = afr_table_values[j][1];
         dataWrapper.data.value = afr_table_values[j][2];
         qbuffer.append(dataWrapper.buffer,7);
-        m_serialWriter->write(qBuffer);
+        m_serialWriter->write(qbuffer);
 
         transmissions = 1;
         receivedFlag = false;
@@ -157,7 +157,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
             dataAddress = data.data();
             for(; i < data.length() - 7; i++)
             {
-                ack = &(dataAddress[i]);
+                ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
                     ack->data.rowNum == dataWrapper.data.rowNum &&
                     ack->data.colNum == dataWrapper.data.colNum &&
@@ -177,8 +177,8 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
 
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
-                transmission++;
-                m_serialWriter->write(qBuffer);
+                transmissions++;
+                m_serialWriter->write(qbuffer);
             }
             if(timer.elapsed() > TIMEOUT_EXIT)
             {
@@ -207,7 +207,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
     dataWrapper.data.ID = 5;
     QByteArray qbuffer;
 
-    union Acknowledgemnent
+    union Acknowledgement
     {
         char buffer[11];
         struct Data
@@ -224,7 +224,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
     QElapsedTimer timer;
     timer.start();
     QByteArray data;
-    bool receivedFlag = flag;
+    bool receivedFlag = false;
     int i;
     int transmissions;
     char* dataAddress;
@@ -234,7 +234,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
         dataWrapper.data.rowNum = afr_requests[j][0];
         dataWrapper.data.colNum = afr_requests[j][1];
         qbuffer.append(dataWrapper.buffer,3);
-        m_serialWriter->write(qBuffer);
+        m_serialWriter->write(qbuffer);
 
         transmissions = 1;
         receivedFlag = false;
@@ -247,7 +247,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             dataAddress = data.data();
             for(; i <= data.length() - 11; i++)
             {
-                ack = &(dataAddress[i]);
+                ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
                     ack->data.rowNum == dataWrapper.data.rowNum &&
                     ack->data.colNum == dataWrapper.data.colNum &&
@@ -268,8 +268,8 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
-                transmission++;
-                m_serialWriter->write(qBuffer);
+                transmissions++;
+                m_serialWriter->write(qbuffer);
             }
             if(timer.elapsed() > TIMEOUT_EXIT)
             {
@@ -316,8 +316,8 @@ int Signals::setIdleFuelRatio(float value)
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 6 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -325,7 +325,7 @@ int Signals::setIdleFuelRatio(float value)
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -366,8 +366,8 @@ int Signals::setCurrentFuelRatio(float value)
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 7 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -375,7 +375,7 @@ int Signals::setCurrentFuelRatio(float value)
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -416,8 +416,8 @@ int Signals::setResetFuelRatio(float value)
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 8 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -425,7 +425,7 @@ int Signals::setResetFuelRatio(float value)
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -466,8 +466,8 @@ int Signals::setDesiredRPM(int32_t value)
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 9 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -475,7 +475,7 @@ int Signals::setDesiredRPM(int32_t value)
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
@@ -516,8 +516,8 @@ int Signals::setDesiredO2(float value)
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
-            ID = &(dataAddress[i]);
-            backPadding = &(dataAddress[i+1]);
+            ID = (uint8_t*) &(dataAddress[i]);
+            backPadding = (uint32_t*) &(dataAddress[i+1]);
             if (*ID == 7 && *backPadding == 0x80000002)
             {
                 return 0;
@@ -525,7 +525,7 @@ int Signals::setDesiredO2(float value)
         }
         if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
         {
-            transmission++;
+            transmissions++;
             m_serialWriter->write(qBuffer);
         }
     }
