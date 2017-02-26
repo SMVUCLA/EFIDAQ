@@ -1,1 +1,1 @@
-Time,Total Revs,ECT,IAT,MAP,TPS,OIN,Total Pulse Time,RPM
+Time (us),Total Revs,ECT (K),IAT (K),MAP (Pa),TPS,AFR (g/g),Total Pulse Time (us),RPM

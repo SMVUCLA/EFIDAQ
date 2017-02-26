@@ -14,7 +14,6 @@ SERIALREADER::SERIALREADER(QObject* parent)
     m_data = new QByteArray;
     m_serialPort = new QSerialPort;
     m_serialPort->setPortName(QString("NONE"));
-    //m_serialPort->setBaudRate(860800);
     m_serialPort->setBaudRate(efidaq::DEFAULT_BAUD_RATE);
 
     //QSerialPort::Baud9600  <-- Maximum data integrity ~47 data points per second
