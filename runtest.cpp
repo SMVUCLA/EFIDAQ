@@ -206,7 +206,6 @@ int RUNTEST::saveData()
         {
             WriteInterpreter writer;
             QString fileContents("");
-            long long ret;
             char* bufferAddress = buffer.data();
             int i;
             //ui->DataBrowser->insertPlainText(QString("%1").arg(buffer.length())+"\n");

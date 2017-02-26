@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     qformdialog.cpp \
     udpreader.cpp \
     sender.cpp \
-    datainterpreter.cpp
+    datainterpreter.cpp \
+    signals.cpp
 
 HEADERS  += efidaq.h \
     testsetup.h \
@@ -44,7 +45,8 @@ HEADERS  += efidaq.h \
     qformdialog.h \
     udpreader.h \
     sender.h \
-    datainterpreter.h
+    datainterpreter.h \
+    signals.h
 
 FORMS    += efidaq.ui \
     testsetup.ui \
