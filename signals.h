@@ -3,7 +3,7 @@
 
 #include <QTimer>
 
-#define NUMBER_OF_AFR_ROWS 10
+#define NUMBER_OF_AFR_ROWS 11
 #define NUMBER_OF_AFR_COLUMNS 16
 #define ROWS_TIMES_COLUMNS 160
 
@@ -21,8 +21,8 @@ public:
     int startSendingData();
     int stopSendingData();
     void synchronizeParamters();
-    void sendTable(QVector<QVector<QString>> afr_table);
-    QVector<QVector<QString>> receiveTable();
+    int sendTable(const QVector<QVector<QString>> &afr_table);
+    QVector<float> receiveTable(const QVector<QVector<int>> &afr_requests);
     int setIdleFuelRatio(float value);
     int setCurrentFuelRatio(float value);
     int setResetFuelRatio(float value);

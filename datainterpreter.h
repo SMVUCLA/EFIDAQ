@@ -6,6 +6,7 @@
 
 #define RAW_DATA_LENGTH 44
 #define NUM_PAD_WORDS 2
+#define DATA_LENGTH 36
 
 class DataInterpreter
 {
@@ -43,8 +44,6 @@ private:
         } bi;
     } *rd;
 };
-
-#define DATA_LENGTH 36
 
 class WriteInterpreter
 {
