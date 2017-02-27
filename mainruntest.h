@@ -33,6 +33,7 @@ private slots:
     void handleParametersEditTriggered();
     void handleProtocolSerialBlocksTriggered(bool);
     void handleProtocolUDPPacketsTriggered(bool);
+    void handleActionCommand_Window_triggered();
 
 private:
     Ui::MAINRUNTEST *ui;

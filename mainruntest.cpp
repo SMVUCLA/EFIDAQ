@@ -1,5 +1,6 @@
 #include "mainruntest.h"
 #include "ui_mainruntest.h"
+#include "serialreader.h"
 #include "runtest.h"
 #include "utilities.h"
 #include "qformdialog.h"
@@ -10,6 +11,7 @@
 #include <QPushButton>
 #include <QSet>
 #include <QSizePolicy>
+#include <QInputDialog>
 
 MAINRUNTEST::MAINRUNTEST(QWidget *parent) :
     QMainWindow(parent),
@@ -43,6 +45,9 @@ MAINRUNTEST::MAINRUNTEST(QWidget *parent) :
     // Connect the collection protocol menu actions to their handler functions.
     connect(ui->actionProtocolSerialBlocks, SIGNAL(triggered(bool)), SLOT(handleProtocolSerialBlocksTriggered(bool)));
     connect(ui->actionProtocolUDP_Packets, SIGNAL(triggered(bool)), SLOT(handleProtocolUDPPacketsTriggered(bool)));
+
+    // Connect command window action
+    connect(ui->actionCommand_Window, SIGNAL(triggered()), SLOT(handleActionCommand_Window_triggered()));
 }
 
 MAINRUNTEST::~MAINRUNTEST()
@@ -270,4 +275,25 @@ bool MAINRUNTEST::isShowingValues() const
 bool MAINRUNTEST::isAutoScrolling() const
 {
     return ui->actionAutoScroll->isChecked();
+}
+
+
+void MAINRUNTEST::handleActionCommand_Window_triggered()
+{
+    QString entry = QInputDialog::getText(nullptr, "Send Commands to Controller","");
+    Signals* transceiver = rt->getTransceiver();
+    QVector<QVector<int>> rowCols;
+    QVector<int> cell;
+    cell.append(3);
+    cell.append(4);
+    rowCols.append(cell);
+    QVector<float> vals = transceiver->receiveTable(rowCols);
+    if (vals.length() == 0)
+    {
+        notify("GOT NOTHING BACK!");
+    }
+    else
+    {
+        notify(QString("Value received: %1").arg(vals[0]));
+    }
 }

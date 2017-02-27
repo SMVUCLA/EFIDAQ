@@ -9,6 +9,7 @@
 #include "tmodels.h"
 #include "utilities.h"
 #include "datainterpreter.h"
+#include "signals.h"
 
 namespace Ui {
 class RUNTEST;
@@ -34,6 +35,7 @@ public:
     void setDataLocked(bool yes = true);
     void stopPlotting(PlotWindow* sender);
     bool isCollectingData() const;
+    Signals* getTransceiver();
 
 public slots:
     void hitDataTimer();
@@ -67,6 +69,8 @@ private:
     unsigned long long int m_ndp;
     QVector<PlotWindow*> pw;
     SERIALREADER* m_serialReader;
+    Signals* transceiver;
+
     UDPReader* m_udpReader;
     QByteArray* m_bytebuf;
     int expectedNumFields;

@@ -77,6 +77,7 @@
     <addaction name="actionRESET"/>
     <addaction name="menuSYNCHRONIZE"/>
     <addaction name="menuSET_PARAMETER"/>
+    <addaction name="actionCommand_Window"/>
    </widget>
    <widget class="QMenu" name="menuParameters">
     <property name="title">
@@ -229,6 +230,11 @@
    </property>
    <property name="text">
     <string>AutoScroll</string>
+   </property>
+  </action>
+  <action name="actionCommand_Window">
+   <property name="text">
+    <string>Command Window</string>
    </property>
   </action>
  </widget>

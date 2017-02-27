@@ -16,7 +16,7 @@ const int FAILED_CURRENTLY_COLLECTING = 2;
 const int OPEN_FILE_FAILED = 3;
 const int WRITE_FILE_FAILED = 4;
 
-const int DEFAULT_BAUD_RATE = 860400;
+const int DEFAULT_BAUD_RATE = 9600;
 const int COLLECTION_BY_SERIAL = 0;
 const int COLLECTION_BY_UDP = 1;
 

@@ -118,6 +118,9 @@ RUNTEST::RUNTEST(MAINRUNTEST* mrtparent, QWidget* parent) :
     filter.addFilter(QString("[^0123456789.-,+\n]"));
 
     m_afrtable=nullptr;
+
+    // Dynamically Allocate Signals class
+    transceiver = new Signals(m_serialReader);
 }
 
 // Destructor for the RUNTEST class
@@ -431,7 +434,7 @@ void RUNTEST::on_StartDCButton_clicked()
     {
     case efidaq::COLLECTION_BY_SERIAL:
         // Attempt to open the serial connection
-        connectionOpened = m_serialReader->open(QIODevice::ReadOnly);
+        connectionOpened = m_serialReader->open(QIODevice::ReadWrite);
         break;
     case efidaq::COLLECTION_BY_UDP:
         // Attempt to bind to the current set address and port.
@@ -606,4 +609,9 @@ void RUNTEST::yItemChanged(QModelIndex yindex)
 bool RUNTEST::isCollectingData() const
 {
     return m_dataRefrTimer->isActive();
+}
+
+Signals* RUNTEST::getTransceiver()
+{
+    return transceiver;
 }

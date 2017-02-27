@@ -254,7 +254,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
                     ack->data.backPadding == 0x80000002)
                 {
                     receivedFlag = true;
-                    afr_values[j] = ack->data.value;
+                    afr_values.append(ack->data.value);
                     break;
                 }
             }
@@ -265,7 +265,6 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
                 break;
             }
 
-
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
                 transmissions++;
@@ -273,7 +272,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             }
             if(timer.elapsed() > TIMEOUT_EXIT)
             {
-                afr_values[j] = -1;
+                afr_values.append(-1);
                 data.clear();
                 break;
             }
