@@ -282,18 +282,39 @@ void MAINRUNTEST::handleActionCommand_Window_triggered()
 {
     QString entry = QInputDialog::getText(nullptr, "Send Commands to Controller","");
     Signals* transceiver = rt->getTransceiver();
-    QVector<QVector<int>> rowCols;
-    QVector<int> cell;
-    cell.append(3);
-    cell.append(4);
-    rowCols.append(cell);
-    QVector<float> vals = transceiver->receiveTable(rowCols);
-    if (vals.length() == 0)
+    if(entry == "4")
     {
-        notify("GOT NOTHING BACK!");
+        QVector<QVector<float>> rowCols;
+        QVector<float> cell;
+        cell.append(3);
+        cell.append(4);
+        cell.append(17);
+        rowCols.append(cell);
+        int ret = transceiver->sendTable(rowCols);
+        if (ret > 0)
+        {
+            notify("GOT NOTHING BACK!");
+        }
+        else
+        {
+            notify(QString("Sent"));
+        }
     }
-    else
+    if(entry == "5")
     {
-        notify(QString("Value received: %1").arg(vals[0]));
+        QVector<QVector<int>> rowCols;
+        QVector<int> cell;
+        cell.append(3);
+        cell.append(4);
+        rowCols.append(cell);
+        QVector<float> vals = transceiver->receiveTable(rowCols);
+        if (vals.length() == 0)
+        {
+            notify("GOT NOTHING BACK!");
+        }
+        else
+        {
+            notify(QString("Value received: %1").arg(vals[0]));
+        }
     }
 }

@@ -91,7 +91,9 @@ unsigned long long SERIALREADER::write(const QByteArray& data)
 {
     if (m_serialPort->isOpen())
     {
-        return m_serialPort->write(data);
+        int n = m_serialPort->write(data);
+        m_serialPort->waitForBytesWritten(-1);
+        return n;
     }
     return 0 ;
 }

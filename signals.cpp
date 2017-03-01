@@ -1,5 +1,10 @@
+//#define DEBUG
 #include "signals.h"
 #include <QElapsedTimer>
+
+#ifdef DEBUG
+    #include <QDebug>
+#endif
 
 Signals::Signals(SERIALREADER* serialWriter)
 {
@@ -105,26 +110,28 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
 {
     union DataWrapper
     {
-        char buffer[7];
+        char buffer[8];
         struct Data
         {
             uint8_t ID;
             uint8_t rowNum;
             uint8_t colNum;
+            uint8_t alignmentPadding;
             float value;
         } data;
     } dataWrapper;
     dataWrapper.data.ID = 4;
-    QByteArray qbuffer;
+    QByteArray qBuffer;
 
     union Acknowledgement
     {
-        char buffer[7];
+        char buffer[8];
         struct Data
         {
             uint8_t ID;
             uint8_t rowNum;
             uint8_t colNum;
+            uint8_t alignmentPadding;
             uint32_t backPadding;
         } data;
     } *ack;
@@ -137,14 +144,13 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
     int i;
     int transmissions;
     char* dataAddress;
-
     for(int j = 0; j < afr_table_values.length(); j++)
     {
         dataWrapper.data.rowNum = afr_table_values[j][0];
         dataWrapper.data.colNum = afr_table_values[j][1];
         dataWrapper.data.value = afr_table_values[j][2];
-        qbuffer.append(dataWrapper.buffer,7);
-        m_serialWriter->write(qbuffer);
+        qBuffer.append(dataWrapper.buffer,8);
+        m_serialWriter->write(qBuffer);
 
         transmissions = 1;
         receivedFlag = false;
@@ -155,9 +161,24 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
         {
             m_serialWriter->availableData(data);
             dataAddress = data.data();
-            for(; i < data.length() - 7; i++)
+            for(; i <= data.length() - 8; i++)
             {
                 ack = (Acknowledgement*) &(dataAddress[i]);
+#ifdef DEBUG
+                if(ack->data.ID == 4)
+                {
+                    qDebug()<<1;
+                    if(ack->data.rowNum == dataWrapper.data.rowNum)
+                    {
+                        qDebug()<<2;
+                        if(ack->data.colNum == dataWrapper.data.colNum)
+                        {
+                            qDebug()<<3;
+                            qDebug()<<ack->data.backPadding;
+                        }
+                    }
+                }
+#endif
                 if (ack->data.ID == dataWrapper.data.ID &&
                     ack->data.rowNum == dataWrapper.data.rowNum &&
                     ack->data.colNum == dataWrapper.data.colNum &&
@@ -178,7 +199,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
                 transmissions++;
-                m_serialWriter->write(qbuffer);
+                m_serialWriter->write(qBuffer);
             }
             if(timer.elapsed() > TIMEOUT_EXIT)
             {
@@ -188,7 +209,9 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
             }
         }
     }
-
+#ifdef DEBUG
+    qDebug() << "i = " << i;
+#endif
     return cellsTimedOut;
 }
 
@@ -205,16 +228,17 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
         } data;
     } dataWrapper;
     dataWrapper.data.ID = 5;
-    QByteArray qbuffer;
+    QByteArray qBuffer;
 
     union Acknowledgement
     {
-        char buffer[11];
+        char buffer[12];
         struct Data
         {
             uint8_t ID;
             uint8_t rowNum;
             uint8_t colNum;
+            uint8_t alignmentPadding;
             float value;
             uint32_t backPadding;
         } data;
@@ -233,8 +257,8 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
     {
         dataWrapper.data.rowNum = afr_requests[j][0];
         dataWrapper.data.colNum = afr_requests[j][1];
-        qbuffer.append(dataWrapper.buffer,3);
-        m_serialWriter->write(qbuffer);
+        qBuffer.append(dataWrapper.buffer,3);
+        m_serialWriter->write(qBuffer);
 
         transmissions = 1;
         receivedFlag = false;
@@ -245,7 +269,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
         {
             m_serialWriter->availableData(data);
             dataAddress = data.data();
-            for(; i <= data.length() - 11; i++)
+            for(; i <= data.length() - 12; i++)
             {
                 ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
@@ -268,7 +292,8 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
                 transmissions++;
-                m_serialWriter->write(qbuffer);
+                m_serialWriter->write(qBuffer);
+
             }
             if(timer.elapsed() > TIMEOUT_EXIT)
             {
@@ -278,7 +303,9 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             }
         }
     }
-
+#ifdef DEBUG
+    qDebug() << "i = " << i;
+#endif
     return afr_values;
 }
 
