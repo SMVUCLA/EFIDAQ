@@ -1,4 +1,4 @@
-//#define DEBUG
+#define DEBUG
 #include "signals.h"
 #include <QElapsedTimer>
 
@@ -255,6 +255,9 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 
     for(int j = 0; j < afr_requests.length(); j++)
     {
+        #ifdef DEBUG
+            qDebug() << "afr_request.length() = " << afr_requests.length();
+        #endif
         dataWrapper.data.rowNum = afr_requests[j][0];
         dataWrapper.data.colNum = afr_requests[j][1];
         qBuffer.append(dataWrapper.buffer,3);
@@ -271,6 +274,9 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             dataAddress = data.data();
             for(; i <= data.length() - 12; i++)
             {
+                #ifdef DEBUG
+                    qDebug() << "here";
+                #endif
                 ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
                     ack->data.rowNum == dataWrapper.data.rowNum &&

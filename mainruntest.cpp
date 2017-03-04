@@ -288,8 +288,35 @@ void MAINRUNTEST::handleActionCommand_Window_triggered()
         QVector<float> cell;
         cell.append(3);
         cell.append(4);
-        cell.append(17);
+        cell.append(10);
         rowCols.append(cell);
+        cell[0] = 7;
+        cell[1] = 9;
+        cell[2] = 15;
+        rowCols.append(cell);
+        cell[0] = 3;
+        cell[1] = 2;
+        cell[2] = 72;
+        rowCols.append(cell);
+        cell[0] = 1;
+        cell[1] = 1;
+        cell[2] = -121;
+        rowCols.append(cell);
+        cell[0] = 2;
+        cell[1] = 1;
+        cell[2] = 14;
+        rowCols.append(cell);
+        cell[0] = 6;
+        cell[1] = 10;
+        cell[2] = 12.345;
+        rowCols.append(cell);
+        for (int i = 0; i < 156; i++)
+        {
+            cell[0] = 6;
+            cell[1] = 10;
+            cell[2] = 12.345;
+            rowCols.append(cell);
+        }
         int ret = transceiver->sendTable(rowCols);
         if (ret > 0)
         {
@@ -307,14 +334,36 @@ void MAINRUNTEST::handleActionCommand_Window_triggered()
         cell.append(3);
         cell.append(4);
         rowCols.append(cell);
+        cell[0] = 7;
+        cell[1] = 9;
+        rowCols.append(cell);
+        cell[0] = 3;
+        cell[1] = 2;
+        rowCols.append(cell);
+        cell[0] = 1;
+        cell[1] = 1;
+        rowCols.append(cell);
+        cell[0] = 2;
+        cell[1] = 1;
+        rowCols.append(cell);
+        cell[0] = 6;
+        cell[1] = 10;
+        rowCols.append(cell);
+        for (int i = 0; i < 156; i++)
+        {
+            cell[0] = 6;
+            cell[1] = 10;
+            rowCols.append(cell);
+        }
         QVector<float> vals = transceiver->receiveTable(rowCols);
-        if (vals.length() == 0)
+        if (vals.length() < 3)
         {
             notify("GOT NOTHING BACK!");
         }
         else
         {
-            notify(QString("Value received: %1").arg(vals[0]));
+            notify(QString("Values received: %1,%2,%3,%4,%5,%6").arg(vals[0]).arg(vals[1]).arg(vals[2])
+                    .arg(vals[3]).arg(vals[4]).arg(vals[5]));
         }
     }
 }

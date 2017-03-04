@@ -93,6 +93,7 @@ unsigned long long SERIALREADER::write(const QByteArray& data)
     {
         int n = m_serialPort->write(data);
         m_serialPort->waitForBytesWritten(-1);
+        //m_serialPort->flush();
         return n;
     }
     return 0 ;

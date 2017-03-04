@@ -442,6 +442,7 @@ void RUNTEST::on_StartDCButton_clicked()
         break;
     }
 
+    //if (connectionOpened && transceiver->startSendingData() == 0)
     if (connectionOpened)
     {
         // Starts the timer.
@@ -483,6 +484,7 @@ void RUNTEST::on_EndDCButton_clicked()
         connectionClosed = m_udpReader->close();
         break;
     }
+    //if (connectionClosed && transceiver->stopSendingData() == 0)
     if (connectionClosed)
     {
         // Stops the timer
