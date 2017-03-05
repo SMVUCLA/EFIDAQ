@@ -147,8 +147,6 @@ bool AFR_TABLE_MODEL::loadTable(QString csvfile)
     return false;
 }
 
-
-
 //===================================//
 // LIST_CHOICES_MODEL IMPLEMENTATION //
 //===================================//

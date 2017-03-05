@@ -521,7 +521,7 @@ void RUNTEST::on_OpenAFRTableButton_clicked()
     // This window is set to delete automatically.
     // Should change it so that this window is closed and deleted when
     // the RUNTEST window is closed and deleted.
-    m_afrtable = new AFRTABLE;
+    m_afrtable = new AFRTABLE(nullptr, transceiver);
     m_afrtable->show();
 }
 

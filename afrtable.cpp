@@ -2,10 +2,11 @@
 #include "ui_afrtable.h"
 #include "tmodels.h"
 #include "utilities.h"
+#include "signals.h"
 #include <QFileDialog>
 #include <QDir>
 
-AFRTABLE::AFRTABLE(QWidget *parent) :
+AFRTABLE::AFRTABLE(QWidget *parent, Signals* transceiver) :
     QMainWindow(parent),
     ui(new Ui::AFRTABLE)
 {
@@ -23,8 +24,15 @@ AFRTABLE::AFRTABLE(QWidget *parent) :
         ui->afrTableView->setModel(m_tmodel);
     }
 
+    this->transceiver = transceiver;
+
     // Connect the load table action to the loadTable function.
     connect(ui->actionLoad_Table, SIGNAL(triggered()), SLOT(loadTable()));
+
+    // Connect the send and receive table buttons.
+    connect(ui->updateControllerButton, SIGNAL(clicked()), SLOT(handle_updateControllerButton_clicked()));
+    connect(ui->updateTableButton, SIGNAL(clicked()), SLOT(handle_updateTableButton_clicked()));
+
 }
 
 AFRTABLE::~AFRTABLE()
@@ -65,4 +73,14 @@ void AFRTABLE::loadTable()
     {
         notify("Failed to load specified file.");
     }
+}
+
+void AFRTABLE::handle_updateControllerButton_clicked()
+{
+    transceiver->sendTable(changedCellVals);
+}
+
+void AFRTABLE::handle_updateTableButton_clicked()
+{
+    transceiver->receiveTable(changedCells);
 }
