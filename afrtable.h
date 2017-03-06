@@ -27,7 +27,7 @@ private slots:
 private:
     Ui::AFRTABLE *ui;
 
-    QVector<QVector<int>> changedCells;
+    QVector<QVector<int>> requestedCells;
     QVector<QVector<float>> changedCellVals;
 
     AFR_TABLE_MODEL* m_tmodel;

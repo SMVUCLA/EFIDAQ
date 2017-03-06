@@ -3,6 +3,7 @@
 #include "tmodels.h"
 #include "utilities.h"
 #include "signals.h"
+#include <QVector>
 #include <QFileDialog>
 #include <QDir>
 
@@ -77,10 +78,33 @@ void AFRTABLE::loadTable()
 
 void AFRTABLE::handle_updateControllerButton_clicked()
 {
-    transceiver->sendTable(changedCellVals);
+    if (transceiver->sendTable(m_tmodel->getChangedCells()) != 0)
+    {
+        notify("One or more cells failed to send.");
+    }
+    else
+    {
+        notify("Controller successfully updated.");
+    }
 }
 
 void AFRTABLE::handle_updateTableButton_clicked()
 {
-    transceiver->receiveTable(changedCells);
+    for (int row = 0; row < m_tmodel->getTable().length(); row++)
+    {
+        for (int col = 0; col < m_tmodel->getTable()[row].length(); col++)
+        {
+            QVector<int> coord;
+            coord.append(row);
+            coord.append(col);
+            requestedCells.append(coord);
+        }
+    }
+    QVector<float> vals = transceiver->receiveTable(requestedCells);
+    for (int i = 0; i < vals.length(); i++)
+    {
+        m_tmodel->setVal(requestedCells, vals);
+    }
 }
+
+

@@ -1,5 +1,6 @@
 #include "tmodels.h"
 #include "utilities.h"
+#include <QAbstractItemModel>
 #include <QBrush>
 #include <QFont>
 #include <QTextStream>
@@ -109,10 +110,30 @@ bool AFR_TABLE_MODEL::setData(const QModelIndex & index, const QVariant & value,
     if (role == Qt::EditRole)
     {
         //save value from editor to member m_gridData
-        m_gridData[index.row()][index.column()] = value.toString();
+        if (value.toString() != m_gridData[index.row()][index.column()] &&
+                value.canConvert<double>())
+        {
+            m_gridData[index.row()][index.column()] = value.toString();
+            QVector<float> coord;
+            coord.append(index.row());
+            coord.append(index.column());
+            changedCellVals.append(coord);
+            changedCellVals[changedCellVals.length()-1].append(value.toFloat());
 
-        // Need to emit this signal to tell the table to update its values.
-        emit dataChanged(index, index);
+            // Need to emit this signal to tell the table to update its values.
+            emit dataChanged(index, index);
+        }
+    }
+    return true;
+}
+
+bool AFR_TABLE_MODEL::setVal(const QVector<QVector<int>>& coords, QVector<float> vals)
+{
+    for (int i = 0; i < vals.length(); i++)
+    {
+        m_gridData[coords[0][0]][coords[0][1]] = vals[i];
+        emit dataChanged(QAbstractItemModel::createIndex(coords[0][0], coords[0][1]),
+                QAbstractItemModel::createIndex(coords[0][0], coords[0][1]));
     }
     return true;
 }
@@ -145,6 +166,17 @@ bool AFR_TABLE_MODEL::loadTable(QString csvfile)
         return true;
     }
     return false;
+}
+
+// Returns the coordinates and values of those coordinates that have been changed.
+const QVector<QVector<float>>& AFR_TABLE_MODEL::getChangedCells() const
+{
+    return changedCellVals;
+}
+
+QList<QList<QString>> AFR_TABLE_MODEL::getTable() const
+{
+    return m_gridData;
 }
 
 //===================================//

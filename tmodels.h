@@ -6,9 +6,6 @@
 #include <QList>
 #include <QString>
 
-const unsigned int DEFAULT_NROWS = 10;
-const unsigned int DEFAULT_NCOLS = 10;
-
 class AFR_TABLE_MODEL : public QAbstractTableModel
 {
     Q_OBJECT
@@ -37,12 +34,17 @@ public:
     bool loadTable(QString filename);
 
     // Returns the data stored in the table as a QVector of Qvectors of QStrings
-    QVector<QVector<QString>> getTable() const;
+    QList<QList<QString>> getTable() const;
+
+    const QVector<QVector<float>>& getChangedCells() const;
+
+    bool setVal(const QVector<QVector<int>>& coords, QVector<float> vals);
 private:
     // holds text entered into the table cells
     QList<QList<QString>> m_gridData;
     QList<QString> m_rowHeaders;
     QList<QString> m_colHeaders;
+    QVector<QVector<float>> changedCellVals;
 signals:
     void editCompleted(const QString &);
 };
