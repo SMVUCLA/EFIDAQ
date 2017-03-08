@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 #include "signals.h"
 #include <QElapsedTimer>
 
@@ -23,6 +23,10 @@ void Signals::reset()
 
 int Signals::startSendingData()
 {
+    QByteArray data;
+    m_serialWriter->availableData(data);
+    data.clear();
+
     uint8_t buffer[1];
     buffer[0] = 1;
     QByteArray qBuffer((char*)buffer,1);
@@ -30,24 +34,38 @@ int Signals::startSendingData()
 
     QElapsedTimer timer;
     timer.start();
-
-    QByteArray data;
     int i = 0;
-    uint8_t* ID;
-    uint32_t* backPadding;
+    uint8_t *ID;
+    uint32_t *backPadding;
     char* dataAddress;
     int transmissions = 1;
+    int ret;
+
+
 
     while(timer.elapsed() < TIMEOUT_EXIT)
     {
-        m_serialWriter->availableData(data);
+        ret = m_serialWriter->availableData(data);
         dataAddress = data.data();
         for(; i <= data.length() - 5; i++)
         {
             ID = (uint8_t*) &(dataAddress[i]);
             backPadding = (uint32_t*) &(dataAddress[i+1]);
+
+#ifdef DEBUG
+            if (*ID == 1)
+            {
+                qDebug() << "ID =" << *ID;
+                qDebug() << *backPadding;
+                //return 0;
+            }
+#endif
+
             if (*ID == 1 && *backPadding == 0x80000002)
             {
+#ifdef DEBUG
+    qDebug() << "i = " << i;
+#endif
                 return 0;
             }
         }
@@ -57,12 +75,71 @@ int Signals::startSendingData()
             m_serialWriter->write(qBuffer);
         }
     }
-
+#ifdef DEBUG
+            qDebug() << i;
+#endif
     return -1;
+
+//    int i = 0;
+//    union Acknowledgement
+//    {
+//        char buffer[8];
+//        struct Data
+//        {
+//            uint8_t ID;
+//            uint8_t alignmentPadding[3];
+//            uint32_t backPadding;
+//        } data;
+//    } *ack;
+//    char* dataAddress;
+//    int transmissions = 1;
+//    int ret;
+
+
+
+//    while(timer.elapsed() < TIMEOUT_EXIT)
+//    {
+//        ret = m_serialWriter->availableData(data);
+//        dataAddress = data.data();
+//        for(; i <= data.length() - 8; i++)
+//        {
+//            ack = (Acknowledgement*)(&dataAddress[i]);
+
+//#ifdef DEBUG
+//            if (ack->data.ID == 1)
+//            {
+//                qDebug() << "ID =" << ack->data.ID;
+//                qDebug() << ack->data.backPadding;
+//                //return 0;
+//            }
+//#endif
+
+//            if (ack->data.ID == 1 && ack->data.backPadding == 0x80000002)
+//            {
+//#ifdef DEBUG
+//    qDebug() << "i = " << i;
+//#endif
+//                return 0;
+//            }
+//        }
+//        if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
+//        {
+//            transmissions++;
+//            m_serialWriter->write(qBuffer);
+//        }
+//    }
+//#ifdef DEBUG
+//            qDebug() << i;
+//#endif
+//    return -1;
 }
 
 int Signals::stopSendingData()
 {
+    QByteArray data;
+    m_serialWriter->availableData(data);
+    data.clear();
+
     uint8_t buffer[1];
     buffer[0] = 2;
     QByteArray qBuffer((char*)buffer,1);
@@ -71,7 +148,6 @@ int Signals::stopSendingData()
     QElapsedTimer timer;
     timer.start();
 
-    QByteArray data;
     int i = 0;
     uint8_t* ID;
     uint32_t* backPadding;
@@ -86,8 +162,21 @@ int Signals::stopSendingData()
         {
             ID = (uint8_t*) &(dataAddress[i]);
             backPadding = (uint32_t*) &(dataAddress[i+1]);
+
+#ifdef DEBUG
+            if (*ID == 2)
+            {
+                qDebug() << "ID =" << *ID;
+                qDebug() << *backPadding;
+                //return 0;
+            }
+#endif
+
             if (*ID == 2 && *backPadding == 0x80000002)
             {
+#ifdef DEBUG
+    qDebug() << "i = " << i;
+#endif
                 return 0;
             }
         }

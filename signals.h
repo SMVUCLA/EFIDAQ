@@ -10,7 +10,7 @@
 
 #include "serialreader.h"
 
-#define TIMEOUT_RETRANSMIT 10
+#define TIMEOUT_RETRANSMIT 50
 #define TIMEOUT_EXIT 500
 
 class Signals
