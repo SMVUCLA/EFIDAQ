@@ -49,6 +49,7 @@ public slots:
     void handleIPAddressEditFinished();
     void handlePortNoEditFinished();
     void handleStreamRefrTimeout();
+    void handle_triggerDataRefrTimer_button();
 
 private slots:
     void on_sampleRateSlider_sliderMoved(int position);

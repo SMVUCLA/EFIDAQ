@@ -13,6 +13,7 @@ public:
     SERIALREADER(QObject* parent = nullptr);
     ~SERIALREADER();
     bool open(QSerialPort::OpenMode openmode);
+    bool isOpen() const;
     bool close();
     void flush();
     unsigned long long availableData(QByteArray& data);

@@ -99,6 +99,12 @@ unsigned long long SERIALREADER::write(const QByteArray& data)
     return 0 ;
 }
 
+
+bool SERIALREADER::isOpen() const
+{
+    return m_serialPort->isOpen();
+}
+
 // Attempts to select a serial port to use.
 QString SERIALREADER::selectPort()
 {
@@ -113,6 +119,7 @@ QString SERIALREADER::selectPort()
         return QString("NONE");
     case 1:
         m_serialPort->setPort(availablePorts[0]);
+        open(QIODevice::ReadWrite);
         break;
     default:
         // Make message box to ask for which serial port to use.

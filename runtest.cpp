@@ -121,6 +121,8 @@ RUNTEST::RUNTEST(MAINRUNTEST* mrtparent, QWidget* parent) :
 
     // Dynamically Allocate Signals class
     transceiver = new Signals(m_serialReader);
+
+    connect(ui->triggerDataRefrTimer_button, SIGNAL(clicked(bool)), SLOT(handle_triggerDataRefrTimer_button()));
 }
 
 // Destructor for the RUNTEST class
@@ -429,26 +431,26 @@ void RUNTEST::on_sampleRateEdit_editingFinished()
 // Resuming data collection causes strange bytes.
 void RUNTEST::on_StartDCButton_clicked()
 {
-    bool connectionOpened = false;
-    switch(mrtparent->collectionMethod())
-    {
-    case efidaq::COLLECTION_BY_SERIAL:
-        // Attempt to open the serial connection
-        connectionOpened = m_serialReader->open(QIODevice::ReadWrite);
-        break;
-    case efidaq::COLLECTION_BY_UDP:
-        // Attempt to bind to the current set address and port.
-        connectionOpened = m_udpReader->open();
-        break;
-    }
+//    bool connectionOpened = false;
+//    switch(mrtparent->collectionMethod())
+//    {
+//    case efidaq::COLLECTION_BY_SERIAL:
+//        // Attempt to open the serial connection
+//        connectionOpened = m_serialReader->open(QIODevice::ReadWrite);
+//        break;
+//    case efidaq::COLLECTION_BY_UDP:
+//        // Attempt to bind to the current set address and port.
+//        connectionOpened = m_udpReader->open();
+//        break;
+//    }
 
-    //if (connectionOpened && transceiver->startSendingData() == 0)
-    if (connectionOpened)
+    if (m_serialReader->isOpen() && transceiver->startSendingData() == 0)
+    //if (m_serialReader->isOpen())
     {
         // Starts the timer.
         if (!m_dataRefrTimer->isActive())
         {
-           //m_dataRefrTimer->start();
+           m_dataRefrTimer->start();
         }
 
         // Need to make the button become unclickable at this point
@@ -472,27 +474,27 @@ void RUNTEST::on_StartDCButton_clicked()
 // Ending data collection causes strange bytes.
 void RUNTEST::on_EndDCButton_clicked()
 {
-    //int stoppedSending = !transceiver->stopSendingData();
-    bool connectionClosed = false;
-    switch(mrtparent->collectionMethod())
+    // Stops the timer
+    if (m_dataRefrTimer->isActive())
     {
-    case efidaq::COLLECTION_BY_SERIAL:
-        // Attempt to open the serial connection
-        connectionClosed = m_serialReader->close();
-        break;
-    case efidaq::COLLECTION_BY_UDP:
-        // Attempt to bind to the current set address and port.
-        connectionClosed = m_udpReader->close();
-        break;
+        m_dataRefrTimer->stop();
     }
-    //if (connectionClosed && stoppedSending)
-    if (connectionClosed)
+    int stoppedSending = !transceiver->stopSendingData();
+//    bool connectionClosed = false;
+//    switch(mrtparent->collectionMethod())
+//    {
+//    case efidaq::COLLECTION_BY_SERIAL:
+//        // Attempt to open the serial connection
+//        connectionClosed = m_serialReader->close();
+//        break;
+//    case efidaq::COLLECTION_BY_UDP:
+//        // Attempt to bind to the current set address and port.
+//        connectionClosed = m_udpReader->close();
+//        break;
+//    }
+    if (stoppedSending)
+    //if (connectionClosed)
     {
-        // Stops the timer
-        if (m_dataRefrTimer->isActive())
-        {
-            m_dataRefrTimer->stop();
-        }
 
         // Need to make this button become unactive at this point
         ui->EndDCButton->setDisabled(true);
@@ -512,6 +514,10 @@ void RUNTEST::on_EndDCButton_clicked()
     }
     else
     {
+        if (!m_dataRefrTimer->isActive())
+        {
+           m_dataRefrTimer->start();
+        }
         notify("Failed to close the connection");
     }
 }
@@ -617,4 +623,18 @@ bool RUNTEST::isCollectingData() const
 Signals* RUNTEST::getTransceiver()
 {
     return transceiver;
+}
+
+
+void RUNTEST::handle_triggerDataRefrTimer_button()
+{
+
+    if (m_dataRefrTimer->isActive())
+    {
+        m_dataRefrTimer->stop();
+    }
+    else
+    {
+        m_dataRefrTimer->start();
+    }
 }
