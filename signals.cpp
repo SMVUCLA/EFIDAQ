@@ -13,9 +13,11 @@ Signals::Signals(SERIALREADER* serialWriter)
 
 void Signals::reset()
 {
-    uint8_t buffer[1];
+    uint8_t buffer[3];
     buffer[0] = 0;
-    QByteArray qBuffer((char*)buffer,1);
+    uint16_t checkSum = checkSumInitial;
+   ((uint16_t *)(&buffer[1]))[0] = checkSum;
+    QByteArray qBuffer((char*)buffer,3);
     m_serialWriter->write(qBuffer);
 
     return;
@@ -27,9 +29,11 @@ int Signals::startSendingData()
     m_serialWriter->availableData(data);
     data.clear();
 
-    uint8_t buffer[1];
+    uint8_t buffer[3];
     buffer[0] = 1;
-    QByteArray qBuffer((char*)buffer,1);
+    uint16_t checkSum = checkSumInitial-1;
+    ((uint16_t *)(&buffer[1]))[0] = checkSum;
+    QByteArray qBuffer((char*)buffer,3);
     m_serialWriter->write(qBuffer);
 
     QElapsedTimer timer;
@@ -140,9 +144,11 @@ int Signals::stopSendingData()
     m_serialWriter->availableData(data);
     data.clear();
 
-    uint8_t buffer[1];
+    uint8_t buffer[3];
     buffer[0] = 2;
-    QByteArray qBuffer((char*)buffer,1);
+    uint16_t checkSum= checkSumInitial-2;
+    ((uint16_t*)(&buffer[1]))[0]= checkSum;
+    QByteArray qBuffer((char*)buffer,3);
     m_serialWriter->write(qBuffer);
 
     QElapsedTimer timer;
@@ -199,7 +205,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
 {
     union DataWrapper
     {
-        char buffer[8];
+        char buffer[10];
         struct Data
         {
             uint8_t ID;
@@ -207,6 +213,7 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
             uint8_t colNum;
             uint8_t alignmentPadding;
             float value;
+            uint16_t checkSum;
         } data;
     } dataWrapper;
     dataWrapper.data.ID = 4;
@@ -238,7 +245,15 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
         dataWrapper.data.rowNum = afr_table_values[j][0];
         dataWrapper.data.colNum = afr_table_values[j][1];
         dataWrapper.data.value = afr_table_values[j][2];
-        qBuffer.append(dataWrapper.buffer,8);
+        unsigned char * valuePointer = reinterpret_cast<unsigned char *>(&(dataWrapper.data.value));
+        dataWrapper.data.checkSum = checkSumInitial - (dataWrapper.data.ID)
+                                                    - (dataWrapper.data.rowNum << 1)
+                                                    - (dataWrapper.data.colNum << 2)
+                                                    - ((uint16_t)(valuePointer[0]) << 3)
+                                                    - ((uint16_t)(valuePointer[1]) << 4)
+                                                    - ((uint16_t)(valuePointer[2]) << 5)
+                                                    - ((uint16_t)(valuePointer[3]) << 6);
+        qBuffer.append(dataWrapper.buffer,10);
         m_serialWriter->write(qBuffer);
 
         transmissions = 1;
@@ -308,12 +323,14 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 {
     union DataWrapper
     {
-        char buffer[3];
+        char buffer[6];
         struct Data
         {
             uint8_t ID;
             uint8_t rowNum;
             uint8_t colNum;
+            uint8_t alignmentPadding;
+            uint16_t checkSum;
         } data;
     } dataWrapper;
     dataWrapper.data.ID = 5;
@@ -349,7 +366,10 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
         #endif
         dataWrapper.data.rowNum = afr_requests[j][0];
         dataWrapper.data.colNum = afr_requests[j][1];
-        qBuffer.append(dataWrapper.buffer,3);
+        dataWrapper.data.checkSum = checkSumInitial - (dataWrapper.data.ID)
+                                                    - (dataWrapper.data.rowNum << 1)
+                                                    - (dataWrapper.data.colNum << 2);
+        qBuffer.append(dataWrapper.buffer,6);
         m_serialWriter->write(qBuffer);
 
         transmissions = 1;

@@ -310,13 +310,13 @@ void MAINRUNTEST::handleActionCommand_Window_triggered()
         cell[1] = 10;
         cell[2] = 12.345;
         rowCols.append(cell);
-        for (int i = 0; i < 156; i++)
-        {
-            cell[0] = 6;
-            cell[1] = 10;
-            cell[2] = 12.345;
-            rowCols.append(cell);
-        }
+//        for (int i = 0; i < 156; i++)
+//        {
+//            cell[0] = 6;
+//            cell[1] = 10;
+//            cell[2] = 12.345;
+//            rowCols.append(cell);
+//        }
         int ret = transceiver->sendTable(rowCols);
         if (ret > 0)
         {
@@ -349,12 +349,12 @@ void MAINRUNTEST::handleActionCommand_Window_triggered()
         cell[0] = 6;
         cell[1] = 10;
         rowCols.append(cell);
-        for (int i = 0; i < 156; i++)
-        {
-            cell[0] = 6;
-            cell[1] = 10;
-            rowCols.append(cell);
-        }
+//        for (int i = 0; i < 156; i++)
+//        {
+//            cell[0] = 6;
+//            cell[1] = 10;
+//            rowCols.append(cell);
+//        }
         QVector<float> vals = transceiver->receiveTable(rowCols);
         if (vals.length() < 3)
         {

@@ -131,9 +131,9 @@ bool AFR_TABLE_MODEL::setVal(const QVector<QVector<int>>& coords, QVector<float>
 {
     for (int i = 0; i < vals.length(); i++)
     {
-        m_gridData[coords[0][0]][coords[0][1]] = vals[i];
-        emit dataChanged(QAbstractItemModel::createIndex(coords[0][0], coords[0][1]),
-                QAbstractItemModel::createIndex(coords[0][0], coords[0][1]));
+        m_gridData[coords[i][0]][coords[i][1]] = QString("%1").arg(vals[i]);
+        emit dataChanged(QAbstractItemModel::createIndex(coords[i][0], coords[i][1]),
+                QAbstractItemModel::createIndex(coords[i][0], coords[i][1]));
     }
     return true;
 }

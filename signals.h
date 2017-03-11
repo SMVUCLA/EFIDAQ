@@ -13,6 +13,8 @@
 #define TIMEOUT_RETRANSMIT 50
 #define TIMEOUT_EXIT 500
 
+const uint16_t checkSumInitial= 0xFFFF;
+
 class Signals
 {
 public:
