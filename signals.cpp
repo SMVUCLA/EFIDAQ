@@ -240,6 +240,8 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
     int i;
     int transmissions;
     char* dataAddress;
+    bool availableDataFlag;
+
     for(int j = 0; j < afr_table_values.length(); j++)
     {
         dataWrapper.data.rowNum = afr_table_values[j][0];
@@ -253,8 +255,14 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
                                                     - ((uint16_t)(valuePointer[1]) << 4)
                                                     - ((uint16_t)(valuePointer[2]) << 5)
                                                     - ((uint16_t)(valuePointer[3]) << 6);
+        qBuffer.clear();
         qBuffer.append(dataWrapper.buffer,10);
+
+        m_serialWriter->availableData(data);
+        data.clear();
+
         m_serialWriter->write(qBuffer);
+        //availableDataFlag = m_serialWriter->waitForData(50);
 
         transmissions = 1;
         receivedFlag = false;
@@ -358,6 +366,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
     int i;
     int transmissions;
     char* dataAddress;
+    bool availableDataFlag;
 
     for(int j = 0; j < afr_requests.length(); j++)
     {
@@ -369,8 +378,14 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
         dataWrapper.data.checkSum = checkSumInitial - (dataWrapper.data.ID)
                                                     - (dataWrapper.data.rowNum << 1)
                                                     - (dataWrapper.data.colNum << 2);
+        qBuffer.clear();
         qBuffer.append(dataWrapper.buffer,6);
+
+        m_serialWriter->availableData(data);
+        data.clear();
+
         m_serialWriter->write(qBuffer);
+        availableDataFlag = m_serialWriter->waitForData(8);
 
         transmissions = 1;
         receivedFlag = false;
@@ -384,7 +399,7 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             for(; i <= data.length() - 12; i++)
             {
                 #ifdef DEBUG
-                    qDebug() << "here";
+                    qDebug() << "here, Transmissions = " << transmissions << ", data length = " << data.length();
                 #endif
                 ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
@@ -400,12 +415,18 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 
             if(receivedFlag)
             {
+                #ifdef DEBUG
+                    qDebug() << "Total Transmission " << transmissions;
+                #endif
                 data.clear();
                 break;
             }
 
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
+                #ifdef DEBUG
+                    qDebug() << "data length = " << data.length();
+                #endif
                 transmissions++;
                 m_serialWriter->write(qBuffer);
 

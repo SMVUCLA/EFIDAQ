@@ -18,8 +18,10 @@ public:
     void flush();
     unsigned long long availableData(QByteArray& data);
     unsigned long long write(const QByteArray& data);
+    bool waitForData(int msecs);
     QString selectPort();
     QString portName() const;
+    void directRead(QByteArray &data);
 
 private:
     QByteArray* m_data;

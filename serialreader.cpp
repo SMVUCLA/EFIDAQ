@@ -24,7 +24,7 @@ SERIALREADER::SERIALREADER(QObject* parent)
 
     // Connect signals to slots
     connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), SLOT(handleError(QSerialPort::SerialPortError)));
-
+    //connect(m_serialPort, SIGNAL(readyRead()), SLOT(handleReadyRead()));
     // Uncomment this to let the user set the serial port when the window opens.
     this->selectPort();
 
@@ -99,6 +99,11 @@ unsigned long long SERIALREADER::write(const QByteArray& data)
     return 0 ;
 }
 
+bool SERIALREADER::waitForData(int msecs)
+{
+    return m_serialPort->waitForReadyRead(msecs);
+}
+
 
 bool SERIALREADER::isOpen() const
 {
@@ -160,6 +165,11 @@ void SERIALREADER::handleReadyRead()
     m_data->append(m_serialPort->readAll());
 }
 
+void SERIALREADER::directRead(QByteArray &data)
+{
+    data.append(m_serialPort->readAll());
+}
+
 // Handles errors
 void SERIALREADER::handleError(QSerialPort::SerialPortError error)
 {
@@ -196,6 +206,7 @@ void SERIALREADER::handleError(QSerialPort::SerialPortError error)
         errorMSG = "UnsupportedOperationError";
         break;
     case QSerialPort::TimeoutError:
+        return;
         errorMSG = "TimeoutError";
         break;
     default:
