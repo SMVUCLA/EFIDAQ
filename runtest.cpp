@@ -109,7 +109,7 @@ RUNTEST::RUNTEST(MAINRUNTEST* mrtparent, QWidget* parent) :
 
     // Allow the serial reader to send a stop collection signal in the event of
     // an abrupt connection break.
-    connect(m_serialReader, SIGNAL(stopCollecting()), SLOT(on_EndDCButton_clicked()));
+    connect(m_serialReader, SIGNAL(stopCollecting()), SLOT(handle_connectionTerminated()));
 
     // Initialize the byte buffer for serial input
     m_bytebuf = new QByteArray;
@@ -522,6 +522,30 @@ void RUNTEST::on_EndDCButton_clicked()
     }
 }
 
+void RUNTEST::handle_connectionTerminated()
+{
+    if (m_dataRefrTimer->isActive())
+    {
+        m_dataRefrTimer->stop();
+    }
+
+    // Need to make this button become unactive at this point
+    ui->EndDCButton->setDisabled(true);
+
+    // Need to make the start data collection button become active. Also changes the text to "resume data collection."
+    ui->StartDCButton->setDisabled(false);
+    ui->StartDCButton->setText(QString("Resume Data Collection"));
+
+    // Write any bytes waiting in the byte buffer to the screen
+    //ui->DataBrowser->append(QString(*m_bytebuf));
+
+    // Clear out the byte buffer
+    m_bytebuf->clear();
+
+    // Releases the lock on window resizing.
+    mrtparent->setResizeable(true);
+}
+
 // Activates whenever the Open AFR Table button is clicked.
 void RUNTEST::on_OpenAFRTableButton_clicked()
 {
@@ -593,7 +617,17 @@ void RUNTEST::on_PlotDataButton_clicked()
 // Activates whenever the get serial port button has been clicked.
 void RUNTEST::on_setSerialPortButton_clicked()
 {
-    ui->serialPortNameLabel->setText(m_serialReader->selectPort());
+    if (ui->setSerialPortButton->text() == "Connected Serial Port:")
+    {
+        ui->serialPortNameLabel->setText(m_serialReader->selectPort());
+        ui->setSerialPortButton->setText("Disconnect Serial Port");
+    }
+    else
+    {
+        m_serialReader->close();
+        ui->setSerialPortButton->setText("Connected Serial Port:");
+        ui->serialPortNameLabel->setText("None");
+    }
 }
 
 // Activated whenever the xListView selection is changed.

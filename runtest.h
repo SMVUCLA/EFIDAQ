@@ -50,6 +50,7 @@ public slots:
     void handlePortNoEditFinished();
     void handleStreamRefrTimeout();
     void handle_triggerDataRefrTimer_button();
+    void handle_connectionTerminated();
 
 private slots:
     void on_sampleRateSlider_sliderMoved(int position);

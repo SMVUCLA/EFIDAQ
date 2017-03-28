@@ -258,11 +258,11 @@
          <property name="font">
           <font>
            <family>Courier New</family>
-           <pointsize>10</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Set Serial Port:</string>
+          <string>Connected Serial Port:</string>
          </property>
         </widget>
        </item>
