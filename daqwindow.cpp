@@ -20,9 +20,6 @@ DAQWindow::DAQWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Delete this window when closed
-    this->setAttribute(Qt::WA_DeleteOnClose, true);
-
     // Connect Push button clicked handlers
     connect(ui->pushButton_Plot_Selections, SIGNAL(clicked(bool)), SLOT(handle_pushButton_Plot_Selections_clicked()));
     connect(ui->pushButton_Connect_To_USB_Port, SIGNAL(clicked(bool)), SLOT(handle_pushButton_Connect_To_USB_Port_clicked()));
@@ -93,18 +90,19 @@ DAQWindow::DAQWindow(QWidget *parent) :
 DAQWindow::~DAQWindow()
 {
     delete ui;
-    for (auto it = pw.begin(); it != pw.end(); it++)
+    for (auto it = pw.begin(); it != pw.end();)
     {
         (*it)->hide();
         delete *it;
+        it = pw.erase(it);
     }
     delete transceiver;
     if (afrTable != nullptr)
     {
         afrTable->hide();
         delete afrTable;
+        afrTable = nullptr;
     }
-    // MUST DELETE THE SERIALHANDLER LAST!!
     delete serialHandler;
 }
 // Serial handlers
@@ -551,6 +549,18 @@ void DAQWindow::closeEvent(QCloseEvent *event)
     {
         if (saveAs())
         {
+            for (auto it = pw.begin(); it != pw.end();)
+            {
+                (*it)->hide();
+                delete *it;
+                it = pw.erase(it);
+            }
+            if (afrTable != nullptr)
+            {
+                afrTable->hide();
+                delete afrTable;
+                afrTable = nullptr;
+            }
             event->accept();
         }
         else
@@ -563,6 +573,18 @@ void DAQWindow::closeEvent(QCloseEvent *event)
             QAbstractButton* d = msgbox2.clickedButton();
             if (d == a)
             {
+                for (auto it = pw.begin(); it != pw.end();)
+                {
+                    (*it)->hide();
+                    delete *it;
+                    it = pw.erase(it);
+                }
+                if (afrTable != nullptr)
+                {
+                    afrTable->hide();
+                    delete afrTable;
+                    afrTable = nullptr;
+                }
                 event->accept();
             }
             else
@@ -573,6 +595,18 @@ void DAQWindow::closeEvent(QCloseEvent *event)
     }
     else if (d == b)
     {
+        for (auto it = pw.begin(); it != pw.end();)
+        {
+            (*it)->hide();
+            delete *it;
+            it = pw.erase(it);
+        }
+        if (afrTable != nullptr)
+        {
+            afrTable->hide();
+            delete afrTable;
+            afrTable = nullptr;
+        }
         event->accept();
     }
     else

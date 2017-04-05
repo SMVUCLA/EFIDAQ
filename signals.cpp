@@ -3,28 +3,29 @@
 #include <QElapsedTimer>
 
 #ifdef DEBUG
-    #include <QDebug>
+#include <QDebug>
 #endif
 
 Signals::Signals(SerialHandler* serialWriter)
 {
     m_serialWriter = serialWriter;
 }
-
 void Signals::reset()
 {
+    if (!m_serialWriter->isOpen())
+        return;
     uint8_t buffer[3];
     buffer[0] = 0;
     uint16_t checkSum = checkSumInitial;
-   ((uint16_t *)(&buffer[1]))[0] = checkSum;
+    ((uint16_t *)(&buffer[1]))[0] = checkSum;
     QByteArray qBuffer((char*)buffer,3);
     m_serialWriter->write(qBuffer);
-
     return;
 }
-
 int Signals::startSendingData()
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     QByteArray data;
     m_serialWriter->availableData(data);
     data.clear();
@@ -68,7 +69,7 @@ int Signals::startSendingData()
             if (*ID == 1 && *backPadding == 0x80000002)
             {
 #ifdef DEBUG
-    qDebug() << "i = " << i;
+                qDebug() << "i = " << i;
 #endif
                 return 0;
             }
@@ -80,66 +81,68 @@ int Signals::startSendingData()
         }
     }
 #ifdef DEBUG
-            qDebug() << i;
+    qDebug() << i;
 #endif
     return -1;
 
-//    int i = 0;
-//    union Acknowledgement
-//    {
-//        char buffer[8];
-//        struct Data
-//        {
-//            uint8_t ID;
-//            uint8_t alignmentPadding[3];
-//            uint32_t backPadding;
-//        } data;
-//    } *ack;
-//    char* dataAddress;
-//    int transmissions = 1;
-//    int ret;
+    //    int i = 0;
+    //    union Acknowledgement
+    //    {
+    //        char buffer[8];
+    //        struct Data
+    //        {
+    //            uint8_t ID;
+    //            uint8_t alignmentPadding[3];
+    //            uint32_t backPadding;
+    //        } data;
+    //    } *ack;
+    //    char* dataAddress;
+    //    int transmissions = 1;
+    //    int ret;
 
 
 
-//    while(timer.elapsed() < TIMEOUT_EXIT)
-//    {
-//        ret = m_serialWriter->availableData(data);
-//        dataAddress = data.data();
-//        for(; i <= data.length() - 8; i++)
-//        {
-//            ack = (Acknowledgement*)(&dataAddress[i]);
+    //    while(timer.elapsed() < TIMEOUT_EXIT)
+    //    {
+    //        ret = m_serialWriter->availableData(data);
+    //        dataAddress = data.data();
+    //        for(; i <= data.length() - 8; i++)
+    //        {
+    //            ack = (Acknowledgement*)(&dataAddress[i]);
 
-//#ifdef DEBUG
-//            if (ack->data.ID == 1)
-//            {
-//                qDebug() << "ID =" << ack->data.ID;
-//                qDebug() << ack->data.backPadding;
-//                //return 0;
-//            }
-//#endif
+    //#ifdef DEBUG
+    //            if (ack->data.ID == 1)
+    //            {
+    //                qDebug() << "ID =" << ack->data.ID;
+    //                qDebug() << ack->data.backPadding;
+    //                //return 0;
+    //            }
+    //#endif
 
-//            if (ack->data.ID == 1 && ack->data.backPadding == 0x80000002)
-//            {
-//#ifdef DEBUG
-//    qDebug() << "i = " << i;
-//#endif
-//                return 0;
-//            }
-//        }
-//        if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
-//        {
-//            transmissions++;
-//            m_serialWriter->write(qBuffer);
-//        }
-//    }
-//#ifdef DEBUG
-//            qDebug() << i;
-//#endif
-//    return -1;
+    //            if (ack->data.ID == 1 && ack->data.backPadding == 0x80000002)
+    //            {
+    //#ifdef DEBUG
+    //    qDebug() << "i = " << i;
+    //#endif
+    //                return 0;
+    //            }
+    //        }
+    //        if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
+    //        {
+    //            transmissions++;
+    //            m_serialWriter->write(qBuffer);
+    //        }
+    //    }
+    //#ifdef DEBUG
+    //            qDebug() << i;
+    //#endif
+    //    return -1;
+
 }
-
 int Signals::stopSendingData()
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     QByteArray data;
     m_serialWriter->availableData(data);
     data.clear();
@@ -181,7 +184,7 @@ int Signals::stopSendingData()
             if (*ID == 2 && *backPadding == 0x80000002)
             {
 #ifdef DEBUG
-    qDebug() << "i = " << i;
+                qDebug() << "i = " << i;
 #endif
                 return 0;
             }
@@ -195,14 +198,14 @@ int Signals::stopSendingData()
 
     return -1;
 }
-
 void Signals::synchronizeParamters()
 {
     return;
 }
-
 int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[10];
@@ -249,12 +252,12 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
         dataWrapper.data.value = afr_table_values[j][2];
         unsigned char * valuePointer = reinterpret_cast<unsigned char *>(&(dataWrapper.data.value));
         dataWrapper.data.checkSum = checkSumInitial - (dataWrapper.data.ID)
-                                                    - (dataWrapper.data.rowNum << 1)
-                                                    - (dataWrapper.data.colNum << 2)
-                                                    - ((uint16_t)(valuePointer[0]) << 3)
-                                                    - ((uint16_t)(valuePointer[1]) << 4)
-                                                    - ((uint16_t)(valuePointer[2]) << 5)
-                                                    - ((uint16_t)(valuePointer[3]) << 6);
+                - (dataWrapper.data.rowNum << 1)
+                - (dataWrapper.data.colNum << 2)
+                - ((uint16_t)(valuePointer[0]) << 3)
+                - ((uint16_t)(valuePointer[1]) << 4)
+                - ((uint16_t)(valuePointer[2]) << 5)
+                - ((uint16_t)(valuePointer[3]) << 6);
         qBuffer.clear();
         qBuffer.append(dataWrapper.buffer,10);
 
@@ -292,9 +295,9 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
                 }
 #endif
                 if (ack->data.ID == dataWrapper.data.ID &&
-                    ack->data.rowNum == dataWrapper.data.rowNum &&
-                    ack->data.colNum == dataWrapper.data.colNum &&
-                    ack->data.backPadding == 0x80000002)
+                        ack->data.rowNum == dataWrapper.data.rowNum &&
+                        ack->data.colNum == dataWrapper.data.colNum &&
+                        ack->data.backPadding == 0x80000002)
                 {
                     receivedFlag = true;
                     break;
@@ -326,9 +329,10 @@ int Signals::sendTable(const QVector<QVector<float>> &afr_table_values)
 #endif
     return cellsTimedOut;
 }
-
 QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 {
+    if (!m_serialWriter->isOpen())
+        return QVector<float>();
     union DataWrapper
     {
         char buffer[6];
@@ -370,14 +374,14 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 
     for(int j = 0; j < afr_requests.length(); j++)
     {
-        #ifdef DEBUG
-            qDebug() << "afr_request.length() = " << afr_requests.length();
-        #endif
+#ifdef DEBUG
+        qDebug() << "afr_request.length() = " << afr_requests.length();
+#endif
         dataWrapper.data.rowNum = afr_requests[j][0];
         dataWrapper.data.colNum = afr_requests[j][1];
         dataWrapper.data.checkSum = checkSumInitial - (dataWrapper.data.ID)
-                                                    - (dataWrapper.data.rowNum << 1)
-                                                    - (dataWrapper.data.colNum << 2);
+                - (dataWrapper.data.rowNum << 1)
+                - (dataWrapper.data.colNum << 2);
         qBuffer.clear();
         qBuffer.append(dataWrapper.buffer,6);
 
@@ -398,14 +402,14 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
             dataAddress = data.data();
             for(; i <= data.length() - 12; i++)
             {
-                #ifdef DEBUG
-                    qDebug() << "here, Transmissions = " << transmissions << ", data length = " << data.length();
-                #endif
+#ifdef DEBUG
+                qDebug() << "here, Transmissions = " << transmissions << ", data length = " << data.length();
+#endif
                 ack = (Acknowledgement*) &(dataAddress[i]);
                 if (ack->data.ID == dataWrapper.data.ID &&
-                    ack->data.rowNum == dataWrapper.data.rowNum &&
-                    ack->data.colNum == dataWrapper.data.colNum &&
-                    ack->data.backPadding == 0x80000002)
+                        ack->data.rowNum == dataWrapper.data.rowNum &&
+                        ack->data.colNum == dataWrapper.data.colNum &&
+                        ack->data.backPadding == 0x80000002)
                 {
                     receivedFlag = true;
                     afr_values.append(ack->data.value);
@@ -415,18 +419,18 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 
             if(receivedFlag)
             {
-                #ifdef DEBUG
-                    qDebug() << "Total Transmission " << transmissions;
-                #endif
+#ifdef DEBUG
+                qDebug() << "Total Transmission " << transmissions;
+#endif
                 data.clear();
                 break;
             }
 
             if(timer.elapsed() > transmissions*TIMEOUT_RETRANSMIT)
             {
-                #ifdef DEBUG
-                    qDebug() << "data length = " << data.length();
-                #endif
+#ifdef DEBUG
+                qDebug() << "data length = " << data.length();
+#endif
                 transmissions++;
                 m_serialWriter->write(qBuffer);
 
@@ -444,9 +448,10 @@ QVector<float> Signals::receiveTable(const QVector<QVector<int>> &afr_requests)
 #endif
     return afr_values;
 }
-
 int Signals::setIdleFuelRatio(float value)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[5];
@@ -494,9 +499,10 @@ int Signals::setIdleFuelRatio(float value)
 
     return -1;
 }
-
 int Signals::setCurrentFuelRatio(float value)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[5];
@@ -544,9 +550,10 @@ int Signals::setCurrentFuelRatio(float value)
 
     return -1;
 }
-
 int Signals::setResetFuelRatio(float value)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[5];
@@ -594,9 +601,10 @@ int Signals::setResetFuelRatio(float value)
 
     return -1;
 }
-
 int Signals::setDesiredRPM(int32_t value)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[5];
@@ -644,9 +652,10 @@ int Signals::setDesiredRPM(int32_t value)
 
     return -1;
 }
-
 int Signals::setDesiredO2(float value)
 {
+    if (!m_serialWriter->isOpen())
+        return -1;
     union DataWrapper
     {
         char buffer[5];

@@ -3,11 +3,12 @@
 #include "tmodels.h"
 #include "utilities.h"
 #include "signals.h"
+
 #include <QVector>
 #include <QFileDialog>
 #include <QDir>
-
-// TABLE CRASHING WHEN TRYING TO UPDATE WITH CONTROLLER PARAMETERS
+#include <QMessageBox>
+#include <QInputDialog>
 
 AFRTABLE::AFRTABLE(QWidget *parent, Signals* transceiver) :
     QMainWindow(parent),
@@ -113,10 +114,18 @@ void AFRTABLE::handle_updateTableButton_clicked()
         }
     }
     QVector<float> vals = transceiver->receiveTable(requestedCells);
+    m_tmodel->setVal(requestedCells, vals);
+    int numFailures = 0;
     for (int i = 0; i < vals.length(); i++)
     {
-        m_tmodel->setVal(requestedCells, vals);
+        if (vals[i] == -1)
+        {
+            numFailures++;
+        }
     }
+    QMessageBox::information(this, "Notification",
+                         QString("Update complete. %1 cells failed to update.").arg(numFailures)
+                         );
 }
 
 // Menu action handlers
