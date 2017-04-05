@@ -41,7 +41,7 @@
 
 #include "ui_plotwindow.h"
 #include "plotwindow.h"
-#include "runtest.h"
+#include "daqwindow.h"
 #include "utilities.h"
 
 #include <QDebug>
@@ -50,7 +50,7 @@
 #include <QMessageBox>
 #include <QMetaEnum>
 
-PlotWindow::PlotWindow(QWidget* parent, RUNTEST* rparent) :
+PlotWindow::PlotWindow(QWidget* parent, DAQWindow* DAQparent) :
   QMainWindow(parent),
   ui(new Ui::PlotWindow),
   m_xData(efidaq::DEFAULT_MAX_PLOTTED_POINTS),
@@ -62,7 +62,7 @@ PlotWindow::PlotWindow(QWidget* parent, RUNTEST* rparent) :
   
   // Needed in order to set a flag in RUNTEST if the plotting window
   // is abruptly closed.
-  this->rparent = rparent;
+  this->DAQparent = DAQparent;
 
   // Connect the menu actions to their slots
   connect(ui->actionData_Points, SIGNAL(triggered()), SLOT(handleActionDataPointsTriggered()));
@@ -177,7 +177,7 @@ void PlotWindow::setupPlayground(QCustomPlot *customPlot)
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
     event->accept();
-    rparent->stopPlotting(this);
+    DAQparent->stopPlotting(this);
 }
 
 PlotWindow::~PlotWindow()
@@ -250,38 +250,32 @@ void PlotWindow::handleActionFrameRateTriggered()
     timer->start(secPerFrame * 1000);
 }
 
-bool PlotWindow::setXLabel(std::pair<QString, int> xLabel)
+bool PlotWindow::setXLabel(QString xLabel, int xLabelIndex)
 {
-    if (xLabel.second >= 0)
-    {
-        m_xLabel = xLabel;
-        ui->customPlot->xAxis->setLabel(xLabel.first);
-        changed = true;
-        return true;
-    }
-    return false;
+    this->xLabel = xLabel;
+    this->xLabelIndex = xLabelIndex;
+    ui->customPlot->xAxis->setLabel(xLabel);
+    changed = true;
+    return true;
 }
 
-bool PlotWindow::setYLabel(std::pair<QString, int> yLabel)
+bool PlotWindow::setYLabel(QString yLabel, int yLabelIndex)
 {
-    if (yLabel.second >= 0)
-    {
-        m_yLabel = yLabel;
-        ui->customPlot->yAxis->setLabel(yLabel.first);
-        changed = true;
-        return true;
-    }
-    return false;
+    this->yLabel = yLabel;
+    this->yLabelIndex = yLabelIndex;
+    ui->customPlot->yAxis->setLabel(yLabel);
+    changed = true;
+    return true;
 }
 
-const std::pair<QString, int>& PlotWindow::getXLabel() const
+int PlotWindow::getXLabelIndex() const
 {
-    return m_xLabel;
+    return xLabelIndex;
 }
 
-const std::pair<QString, int>& PlotWindow::getYLabel() const
+int PlotWindow::getYLabelIndex() const
 {
-    return m_yLabel;
+    return yLabelIndex;
 }
 
 

@@ -15,46 +15,37 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        efidaq.cpp \
-    testsetup.cpp \
     tmodels.cpp \
-    runtest.cpp \
     utilities.cpp \
     qcustomplot.cpp \
-    serialreader.cpp \
-    mainruntest.cpp \
     afrtable.cpp \
     plotwindow.cpp \
     qformdialog.cpp \
-    udpreader.cpp \
-    sender.cpp \
     datainterpreter.cpp \
-    signals.cpp
+    signals.cpp \
+    daqwindow.cpp \
+    serialhandler.cpp \
+    listmodel.cpp
 
-HEADERS  += efidaq.h \
-    testsetup.h \
+HEADERS  += \
     tmodels.h \
-    runtest.h \
     utilities.h \
     qcustomplot.h \
-    serialreader.h \
-    mainruntest.h \
     afrtable.h \
     wrappingqvector.h \
     plotwindow.h \
     qformdialog.h \
-    udpreader.h \
-    sender.h \
     datainterpreter.h \
-    signals.h
+    signals.h \
+    daqwindow.h \
+    serialhandler.h \
+    listmodel.h
 
-FORMS    += efidaq.ui \
-    testsetup.ui \
-    runtest.ui \
-    mainruntest.ui \
+FORMS    += \
     afrtable.ui \
     plotwindow.ui \
-    qformdialog.ui
+    qformdialog.ui \
+    daqwindow.ui
 
 RESOURCES += \
     efidaq.qrc

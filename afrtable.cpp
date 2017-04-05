@@ -7,6 +7,8 @@
 #include <QFileDialog>
 #include <QDir>
 
+// TABLE CRASHING WHEN TRYING TO UPDATE WITH CONTROLLER PARAMETERS
+
 AFRTABLE::AFRTABLE(QWidget *parent, Signals* transceiver) :
     QMainWindow(parent),
     ui(new Ui::AFRTABLE)
@@ -14,9 +16,6 @@ AFRTABLE::AFRTABLE(QWidget *parent, Signals* transceiver) :
     ui->setupUi(this);
     setWindowTitle(QString("Air to Fuel Ratio Table"));
     setWindowIcon(QIcon(efidaq::DEFAULT_LOGO_FILEPATH));
-
-    // Set to delete when closed.
-    this->setAttribute(Qt::WA_DeleteOnClose, true);
 
     // Initialize the model pointer.
     m_tmodel = new AFR_TABLE_MODEL(nullptr);
@@ -45,6 +44,15 @@ AFRTABLE::~AFRTABLE()
     }
 }
 
+// Reimplemented events
+void AFRTABLE::closeEvent(QCloseEvent *event)
+{
+    // want to ask to save table before exiting
+    emit closing();
+    event->accept();
+}
+
+// Other functions
 void AFRTABLE::loadTable()
 {
     // Get a selected file from the user.
@@ -75,7 +83,12 @@ void AFRTABLE::loadTable()
         notify("Failed to load specified file.");
     }
 }
+bool AFRTABLE::saveTable()
+{
+    return false;
+}
 
+// Clicked pushButton handlers
 void AFRTABLE::handle_updateControllerButton_clicked()
 {
     if (transceiver->sendTable(m_tmodel->getChangedCells()) != 0)
@@ -87,7 +100,6 @@ void AFRTABLE::handle_updateControllerButton_clicked()
         notify("Controller successfully updated.");
     }
 }
-
 void AFRTABLE::handle_updateTableButton_clicked()
 {
     for (int row = 0; row < m_tmodel->getTable().length(); row++)
@@ -107,4 +119,13 @@ void AFRTABLE::handle_updateTableButton_clicked()
     }
 }
 
+// Menu action handlers
+void AFRTABLE::handle_actionSaveAs()
+{
+    // needs to save
+}
+void AFRTABLE::handle_actionLoad_Table()
+{
+    // needs to load a table
+}
 

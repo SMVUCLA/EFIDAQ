@@ -55,7 +55,7 @@ namespace Ui {
 class PlotWindow;
 }
 
-class RUNTEST;
+class DAQWindow;
 class QTimer;
 
 class PlotWindow : public QMainWindow
@@ -63,17 +63,17 @@ class PlotWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  explicit PlotWindow(QWidget* parent = 0, RUNTEST* rparent = 0);
+  explicit PlotWindow(QWidget* parent = 0, DAQWindow* rparent = 0);
   ~PlotWindow();
 
   void setupPlayground(QCustomPlot *customPlot);
   void addData(QVector<double>& X, QVector<double>& Y);
   void setup(QCustomPlot *customPlot);
 
-  bool setXLabel(std::pair<QString, int> xLabel);
-  bool setYLabel(std::pair<QString, int> yLabel);
-  const std::pair<QString, int>& getXLabel() const;
-  const std::pair<QString, int>& getYLabel() const;
+  bool setXLabel(QString xLabel, int xLabelIndex);
+  bool setYLabel(QString yLabel, int yLabelIndex);
+  int getXLabelIndex() const;
+  int getYLabelIndex() const;
 
 private slots:
   void handleActionDataPointsTriggered();
@@ -100,9 +100,12 @@ private:
 
   WrappingQVector<double> m_xData;
   WrappingQVector<double> m_yData;
-  std::pair<QString, int> m_xLabel;
-  std::pair<QString, int> m_yLabel;
-  RUNTEST* rparent;
+  QString xLabel;
+  int xLabelIndex;
+  QString yLabel;
+  int yLabelIndex;
+
+  DAQWindow* DAQparent;
 };
 
 #endif // PLOTWINDOW_H

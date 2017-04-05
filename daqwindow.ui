@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DAQWindow</class>
+ <widget class="QMainWindow" name="DAQWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1064</width>
+    <height>616</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Calibri</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="3" column="0" colspan="2">
+           <widget class="QPushButton" name="pushButton_Plot_Selections">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Produces a plot window with axis labels matching the current selections.</string>
+            </property>
+            <property name="text">
+             <string>Plot Selections</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QListView" name="listView_x_labels">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>256</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Displays available x-axis labels.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(64, 66, 68);
+font: 90 10pt &quot;Courier New&quot;;
+color: rgb(0, 255, 115);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_Connected_Port">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="text">
+             <string>Connected Port: NONE</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QListView" name="listView_y_labels">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>256</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Displays available y-axis labels.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(64, 66, 68);
+font: 90 10pt &quot;Courier New&quot;;
+color: rgb(0, 255, 115);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButton_Connect_To_USB_Port">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Connect to USB Port</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="text">
+             <string>X-Axis Labels</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="text">
+             <string>Y-Axis Labels</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="pushButton_Toggle_Collection">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Toggles data collection on or off.</string>
+            </property>
+            <property name="text">
+             <string>Start Data Collection</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QTextEdit" name="textEdit_Collection_Window">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>512</width>
+              <height>256</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Displays incoming data values.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(64, 66, 68);
+font: 90 10pt &quot;Courier New&quot;;
+color: rgb(0, 255, 115);</string>
+            </property>
+            <property name="placeholderText">
+             <string>Data Collection Window</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLCDNumber" name="lcdNumber_numDataPoints">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>46</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Panel</enum>
+            </property>
+            <property name="lineWidth">
+             <number>3</number>
+            </property>
+            <property name="smallDecimalPoint">
+             <bool>false</bool>
+            </property>
+            <property name="digitCount">
+             <number>10</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Filled</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1064</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave_As"/>
+    <addaction name="actionClear"/>
+   </widget>
+   <widget class="QMenu" name="menuPerformance">
+    <property name="title">
+     <string>Performance</string>
+    </property>
+    <widget class="QMenu" name="menuCollection_Window">
+     <property name="title">
+      <string>Collection Window</string>
+     </property>
+     <addaction name="actionCollection_Window_Autoscroll"/>
+     <addaction name="actionCollection_Window_Display_Values"/>
+     <addaction name="actionCollection_Window_Frame_Rate"/>
+     <addaction name="actionCollection_Window_Syntax_Highlighting"/>
+    </widget>
+    <widget class="QMenu" name="menuPlotting">
+     <property name="title">
+      <string>Plotting </string>
+     </property>
+     <addaction name="actionPlotting_Anti_aliasing"/>
+     <addaction name="actionPlotting_Frame_Rate"/>
+    </widget>
+    <addaction name="menuCollection_Window"/>
+    <addaction name="separator"/>
+    <addaction name="menuPlotting"/>
+   </widget>
+   <widget class="QMenu" name="menuSignals">
+    <property name="title">
+     <string>Signals</string>
+    </property>
+    <widget class="QMenu" name="menuPredefined_Commands">
+     <property name="title">
+      <string>Predefined Commands</string>
+     </property>
+     <addaction name="actionPredefined_Commands_Reset"/>
+     <addaction name="actionStart_Data_Transmission"/>
+     <addaction name="actionEnd_Data_Transmission"/>
+    </widget>
+    <addaction name="actionCommand_Window"/>
+    <addaction name="menuPredefined_Commands"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionPlotting_Defaults"/>
+    <addaction name="separator"/>
+    <addaction name="actionCollection_Defaults"/>
+    <addaction name="actionRefresh_Rate"/>
+   </widget>
+   <widget class="QMenu" name="menuParameters">
+    <property name="title">
+     <string>ECU Parameters</string>
+    </property>
+    <widget class="QMenu" name="menuAFR_Feedback">
+     <property name="title">
+      <string>AFR Feedback</string>
+     </property>
+     <addaction name="actionAFR_Feedback_K_p"/>
+     <addaction name="actionAFR_Feedback_K_d"/>
+    </widget>
+    <widget class="QMenu" name="menuRPM_Feedback">
+     <property name="title">
+      <string>RPM Feedback</string>
+     </property>
+     <addaction name="actionRPM_Feedback_K_p"/>
+     <addaction name="actionRPM_Feedback_K_d"/>
+    </widget>
+    <addaction name="menuAFR_Feedback"/>
+    <addaction name="menuRPM_Feedback"/>
+    <addaction name="actionAFR_Table"/>
+    <addaction name="actionCold_Start_Adjustment"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuPerformance"/>
+   <addaction name="menuSignals"/>
+   <addaction name="menuParameters"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave_As">
+   <property name="text">
+    <string>Save As</string>
+   </property>
+   <property name="toolTip">
+    <string>Save all collected data in a file of your choosing.</string>
+   </property>
+  </action>
+  <action name="actionAutoscroll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Autoscroll</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Values">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Values</string>
+   </property>
+  </action>
+  <action name="actionCommand_Window">
+   <property name="text">
+    <string>Command Window</string>
+   </property>
+   <property name="toolTip">
+    <string>Open a command window from which the user can send command codes to the controller.</string>
+   </property>
+  </action>
+  <action name="actionPlotting_Defaults">
+   <property name="text">
+    <string>Plotting Defaults</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify default plotting parameters used when a new plot window is created.</string>
+   </property>
+  </action>
+  <action name="actionCollection_Defaults">
+   <property name="text">
+    <string>Collection Defaults</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify default collection parameters used when opening the DAQ window.</string>
+   </property>
+  </action>
+  <action name="actionRefresh_Rate">
+   <property name="text">
+    <string>Refresh Rate</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the refresh rate for the data collection system. This controls how often the system checks to see if new data has arrived.</string>
+   </property>
+  </action>
+  <action name="actionPlot_Anti_aliasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Plot Anti-aliasing</string>
+   </property>
+  </action>
+  <action name="actionAFR_Feedback_K_d">
+   <property name="text">
+    <string>K_d</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the K_d value for O2 sensor feedback control</string>
+   </property>
+  </action>
+  <action name="actionAFR_Feedback_K_p">
+   <property name="text">
+    <string>K_p</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the K_p value for O2 sensor feedback control.</string>
+   </property>
+  </action>
+  <action name="actionRPM_Feedback_K_p">
+   <property name="text">
+    <string>K_p</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the K_p value for RPM feedback control.</string>
+   </property>
+  </action>
+  <action name="actionRPM_Feedback_K_d">
+   <property name="text">
+    <string>K_d</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the K_p value for RPM feedback control.</string>
+   </property>
+  </action>
+  <action name="actionAFR_Table">
+   <property name="text">
+    <string>AFR Table</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the AFR Table currently stored on the controller for viewing or editting.</string>
+   </property>
+  </action>
+  <action name="actionCold_Start_Adjustment">
+   <property name="text">
+    <string>Cold Start Adjustment</string>
+   </property>
+   <property name="toolTip">
+    <string>Open a window for specifying cold star adjustment.</string>
+   </property>
+  </action>
+  <action name="actionCollection_Window_Autoscroll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Autoscroll</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle autoscrolling on or off for the data collection window. Checked means autoscrolling is on.</string>
+   </property>
+  </action>
+  <action name="actionCollection_Window_Display_Values">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Values</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle the collection window display on or off. When not checked, data values will not be displaed in the window.</string>
+   </property>
+  </action>
+  <action name="actionPlotting_Anti_aliasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Anti-aliasing</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle anti-aliasing on or off for all of the plot windows. Checked means on.</string>
+   </property>
+  </action>
+  <action name="actionPlotting_Frame_Rate">
+   <property name="text">
+    <string>Frame Rate</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the frame rate for all the plot windows simultaneously.</string>
+   </property>
+  </action>
+  <action name="actionCollection_Window_Frame_Rate">
+   <property name="text">
+    <string>Frame Rate</string>
+   </property>
+   <property name="toolTip">
+    <string>Specify the rate at which the display window refreshes itself to display new values.</string>
+   </property>
+  </action>
+  <action name="actionPredefined_Commands_Reset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="toolTip">
+    <string>Send a signal to the controller telling it to perform a hardware reset.</string>
+   </property>
+  </action>
+  <action name="actionStart_Data_Transmission">
+   <property name="text">
+    <string>Start Data Transmission</string>
+   </property>
+   <property name="toolTip">
+    <string>Tell the controller to start transmitting data.</string>
+   </property>
+  </action>
+  <action name="actionEnd_Data_Transmission">
+   <property name="text">
+    <string>End Data Transmission</string>
+   </property>
+   <property name="toolTip">
+    <string>Tell the controller to stop transmitting data.</string>
+   </property>
+  </action>
+  <action name="actionCollection_Window_Syntax_Highlighting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Syntax Highlighting</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

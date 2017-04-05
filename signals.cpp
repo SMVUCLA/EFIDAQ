@@ -6,7 +6,7 @@
     #include <QDebug>
 #endif
 
-Signals::Signals(SERIALREADER* serialWriter)
+Signals::Signals(SerialHandler* serialWriter)
 {
     m_serialWriter = serialWriter;
 }

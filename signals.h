@@ -8,7 +8,7 @@
 #define NUMBER_OF_AFR_COLUMNS 16
 #define ROWS_TIMES_COLUMNS 160
 
-#include "serialreader.h"
+#include "serialhandler.h"
 
 #define TIMEOUT_RETRANSMIT 50
 #define TIMEOUT_EXIT 500
@@ -18,7 +18,7 @@ const uint16_t checkSumInitial= 0xFFFF;
 class Signals
 {
 public:
-    Signals(SERIALREADER* serialWriter);
+    Signals(SerialHandler* serialWriter);
 
     void reset();
     int startSendingData();
@@ -33,7 +33,7 @@ public:
     int setDesiredO2(float value);
 
 private:
-    SERIALREADER* m_serialWriter;
+    SerialHandler* m_serialWriter;
 
 };
 
