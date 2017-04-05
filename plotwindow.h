@@ -55,6 +55,9 @@ namespace Ui {
 class PlotWindow;
 }
 
+const int DEFAULT_MAX_PLOTTED_POINTS = 1000;
+const int DEFAULT_FRAME_RATE = 100;
+
 class DAQWindow;
 class QTimer;
 

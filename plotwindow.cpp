@@ -53,12 +53,12 @@
 PlotWindow::PlotWindow(QWidget* parent, DAQWindow* DAQparent) :
   QMainWindow(parent),
   ui(new Ui::PlotWindow),
-  m_xData(efidaq::DEFAULT_MAX_PLOTTED_POINTS),
-  m_yData(efidaq::DEFAULT_MAX_PLOTTED_POINTS),
-  measuredFrameRate(efidaq::DEFAULT_FRAME_RATE)
+  m_xData(DEFAULT_MAX_PLOTTED_POINTS),
+  m_yData(DEFAULT_MAX_PLOTTED_POINTS),
+  measuredFrameRate(DEFAULT_FRAME_RATE)
 {
   ui->setupUi(this);
-  setWindowIcon(QIcon(efidaq::DEFAULT_LOGO_FILEPATH));
+  setWindowIcon(QIcon(DEFAULT_LOGO_FILEPATH));
   
   // Needed in order to set a flag in RUNTEST if the plotting window
   // is abruptly closed.
@@ -78,7 +78,7 @@ PlotWindow::PlotWindow(QWidget* parent, DAQWindow* DAQparent) :
   time = new QTime;
   time->start();
   lastTime = time->elapsed();
-  frameRate = efidaq::DEFAULT_FRAME_RATE;
+  frameRate = DEFAULT_FRAME_RATE;
   secPerFrame = 1.0 / frameRate;
 
   timer = new QTimer();
@@ -232,7 +232,10 @@ void PlotWindow::handleActionConnectPointsTriggered(bool connect)
 
 void PlotWindow::handleActionSavePlotTriggered()
 {
-    notify("Action not yet implemented.");
+    QMessageBox::warning(this,
+                         "ERROR",
+                         "Action not yet implemented."
+                         );
 }
 
 void PlotWindow::handleActionFrameRateTriggered()

@@ -6,6 +6,7 @@
 #include "serialhandler.h"
 #include "signals.h"
 
+#include <utilities.h>
 #include <QVector>
 #include <QMessageBox>
 #include <QDir>
@@ -19,6 +20,7 @@ DAQWindow::DAQWindow(QWidget *parent) :
     ui(new Ui::DAQWindow)
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(DEFAULT_LOGO_FILEPATH));
 
     // Connect Push button clicked handlers
     connect(ui->pushButton_Plot_Selections, SIGNAL(clicked(bool)), SLOT(handle_pushButton_Plot_Selections_clicked()));
@@ -85,6 +87,12 @@ DAQWindow::DAQWindow(QWidget *parent) :
 
     // Try to connect to a serial port
     handle_pushButton_Connect_To_USB_Port_clicked();
+
+    if (ui->actionCollection_Window_Syntax_Highlighting->isChecked())
+    {
+        // Set up the syntax highlighter if default setting put it on.
+        syntaxHighlighter = new Highlighter(ui->textEdit_Collection_Window->document());
+    }
 }
 
 DAQWindow::~DAQWindow()
@@ -528,7 +536,15 @@ void DAQWindow::handle_actionEnd_Data_Transmission()
 }
 void DAQWindow::handle_actionCollection_Window_Syntax_Highlighting()
 {
-    return;
+    if (ui->actionCollection_Window_Syntax_Highlighting->isChecked())
+    {
+        // Set up the syntax highlighter for the DataBrowser
+        syntaxHighlighter = new Highlighter(ui->textEdit_Collection_Window->document());
+    }
+    else
+    {
+        delete syntaxHighlighter;
+    }
 }
 
 // Events reimplemented
@@ -634,7 +650,6 @@ bool DAQWindow::saveAs()
 {
     if (timer_checkForInput.isActive())
     {
-
         QMessageBox::warning(this, "ERROR",
                              "Cannot save while data is being collected."
                              );

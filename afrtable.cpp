@@ -16,11 +16,11 @@ AFRTABLE::AFRTABLE(QWidget *parent, Signals* transceiver) :
 {
     ui->setupUi(this);
     setWindowTitle(QString("Air to Fuel Ratio Table"));
-    setWindowIcon(QIcon(efidaq::DEFAULT_LOGO_FILEPATH));
+    setWindowIcon(QIcon(DEFAULT_LOGO_FILEPATH));
 
     // Initialize the model pointer.
     m_tmodel = new AFR_TABLE_MODEL(nullptr);
-    if (m_tmodel->loadTable(efidaq::DEFAULT_AFR_TABLE_FILEPATH))
+    if (m_tmodel->loadTable(DEFAULT_AFR_TABLE_FILEPATH))
     {
         ui->afrTableView->setModel(m_tmodel);
     }
@@ -81,7 +81,9 @@ void AFRTABLE::loadTable()
     }
     else
     {
-        notify("Failed to load specified file.");
+        QMessageBox::warning(this, "ERROR",
+                             "Failed to load specified file."
+                             );
     }
 }
 bool AFRTABLE::saveTable()
@@ -94,11 +96,15 @@ void AFRTABLE::handle_updateControllerButton_clicked()
 {
     if (transceiver->sendTable(m_tmodel->getChangedCells()) != 0)
     {
-        notify("One or more cells failed to send.");
+        QMessageBox::warning(this, "ERROR",
+                             "One or more cells failed to send."
+                             );
     }
     else
     {
-        notify("Controller successfully updated.");
+        QMessageBox::information(this, "Notification",
+                             "Controller successfully updated."
+                             );
     }
 }
 void AFRTABLE::handle_updateTableButton_clicked()

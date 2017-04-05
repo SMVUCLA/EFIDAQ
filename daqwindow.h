@@ -17,6 +17,7 @@ class DAQWindow;
 
 class PlotWindow;
 class SerialHandler;
+class Highlighter;
 
 const int MINIMUM_COLLECTION_REFRESH_TIME = 1;
 const int MAXIMUM_COLLECTION_REFRESH_TIME = 1000;
@@ -110,6 +111,7 @@ private:
     Signals* transceiver;
 
     // Data Collection
+    Highlighter* syntaxHighlighter;
     QByteArray dataBuffer;
     QByteArray carryoverByteBuffer;
     int numDataPoints;

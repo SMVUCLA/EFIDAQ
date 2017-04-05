@@ -1,5 +1,7 @@
 #include "tmodels.h"
 #include "utilities.h"
+
+#include <QMessageBox>
 #include <QAbstractItemModel>
 #include <QBrush>
 #include <QFont>
@@ -23,7 +25,10 @@ AFR_TABLE_MODEL::AFR_TABLE_MODEL(QObject *parent, QString filename)
 {
     if (!loadTable(filename))
     {
-        notify("Unable to load specified file.");
+        QMessageBox::warning(nullptr,
+                             "ERROR",
+                             "Unable to load specified file."
+                             );
     }
 }
 
