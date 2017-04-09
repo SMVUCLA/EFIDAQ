@@ -21,10 +21,10 @@ class Highlighter;
 
 const int MINIMUM_COLLECTION_REFRESH_TIME = 1;
 const int MAXIMUM_COLLECTION_REFRESH_TIME = 1000;
-const int DEFAULT_COLLECTION_REFRESH_TIME = 1;
+//const int DEFAULT_COLLECTION_REFRESH_TIME = 1;
 const int MINIMUM_COLLECTION_WINDOW_FRAME_RATE = 1;
 const int MAXIMUM_COLLECTION_WINDOW_FRAME_RATE = 1000;
-const int DEFAULT_COLLECTION_WINDOW_FRAME_RATE = 100;
+//const int DEFAULT_COLLECTION_WINDOW_FRAME_RATE = 100;
 
 const QString DEFAULT_XLABEL_LIST_FILENAME = ":/LABEL_LIST.csv";
 const QString DEFAULT_YLABEL_LIST_FILENAME = ":/LABEL_LIST.csv";
@@ -42,6 +42,7 @@ public:
     void setResizeable(bool resizeable);
     bool saveAs();
     bool clear();
+
 
     void closeEvent(QCloseEvent *event) override;
 
@@ -123,6 +124,36 @@ private:
 
     // AFRTABLE
     AFRTABLE* afrTable;
+
+public:
+    bool savePlottingAndCollectionDefaults();
+    void loadPlottingAndCollectionDefaults();
+
+    int getPlottingDefaultFrameRate();
+    int getPlottingDefaultDataPoints();
+
+    bool getCollectionDefaultAutoscroll();
+    bool getCollectionDefaultDisplayValues();
+    int getCollectionDefaultFrameRate();
+    int getCollectionDefaultRefreshRate();
+    bool getCollectionDefaultSyntaxHighlighting();
+
+private:
+    struct
+    {
+        int frameRate = 100;
+        int dataPoints = 1000;
+        bool antiAliasing = false;
+    } plottingDefaults;
+
+    struct
+    {
+        bool autoscroll = false;
+        bool displayValues = false;
+        int frameRate = 100;
+        int refreshRate = 1;
+        bool syntaxHighlighting = false;
+    } collectionDefaults;
 };
 
 #endif // DAQWINDOW_H

@@ -15,12 +15,18 @@
 #include <QInputDialog>
 #include <QAbstractButton>
 
+#define stringify(variable) #variable
+
 DAQWindow::DAQWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DAQWindow)
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(DEFAULT_LOGO_FILEPATH));
+
+    // Load Default Plotting and Collection Defaults from file
+    loadPlottingAndCollectionDefaults();
+
 
     // Connect Push button clicked handlers
     connect(ui->pushButton_Plot_Selections, SIGNAL(clicked(bool)), SLOT(handle_pushButton_Plot_Selections_clicked()));
@@ -54,8 +60,8 @@ DAQWindow::DAQWindow(QWidget *parent) :
     connect(ui->actionCollection_Window_Syntax_Highlighting, SIGNAL(triggered(bool)), SLOT(handle_actionCollection_Window_Syntax_Highlighting()));
 
     // Initialize member variables
-    current_Collection_Refresh_Time = DEFAULT_COLLECTION_REFRESH_TIME;
-    current_Collection_Window_Frame_Rate = DEFAULT_COLLECTION_WINDOW_FRAME_RATE;
+    current_Collection_Refresh_Time = getCollectionDefaultRefreshRate();
+    current_Collection_Window_Frame_Rate = getCollectionDefaultFrameRate();
     numDataPoints = 0;
 
     // Initialize Serial Handler
@@ -79,11 +85,11 @@ DAQWindow::DAQWindow(QWidget *parent) :
     connect(ui->listView_y_labels, SIGNAL(activated(QModelIndex)), SLOT(yItemChanged(QModelIndex)));
 
     // Initialize Timers
-    timer_checkForInput.setInterval(DEFAULT_COLLECTION_REFRESH_TIME);
+    timer_checkForInput.setInterval(getCollectionDefaultRefreshRate());
     connect(&timer_checkForInput, SIGNAL(timeout()), SLOT(handle_timer_checkForInput_timeout()));
-    timer_refreshCollectionWindow.setInterval(1000/DEFAULT_COLLECTION_WINDOW_FRAME_RATE);
+    timer_refreshCollectionWindow.setInterval(1000/getCollectionDefaultFrameRate());
     connect(&timer_refreshCollectionWindow, SIGNAL(timeout()), SLOT(handle_timer_refreshCollectionWindow_timeout()));
-    timer_refreshCollectionWindow.start(1000/DEFAULT_COLLECTION_WINDOW_FRAME_RATE);
+    timer_refreshCollectionWindow.start(1000/getCollectionDefaultFrameRate());
 
     // Try to connect to a serial port
     handle_pushButton_Connect_To_USB_Port_clicked();
@@ -745,4 +751,140 @@ bool DAQWindow::clear()
             return false;
         }
     }
+}
+
+bool DAQWindow::savePlottingAndCollectionDefaults()
+{
+    QString filename = "settings.DAQ";
+    QFile settingsFile(filename,this);
+    if (settingsFile.exists())
+    {
+        QMessageBox msgbox;
+        msgbox.setText("Overwrite previous settings?");
+        QAbstractButton* a = msgbox.addButton(QMessageBox::Yes);
+        msgbox.addButton(QMessageBox::Cancel);
+        msgbox.exec();
+        QAbstractButton* b = msgbox.clickedButton();
+        if (b != a)
+        {
+            QMessageBox::information(this,"Notification", "Settings were not saved.");
+            return false;
+        }
+        else
+        {
+            settingsFile.remove();
+        }
+    }
+    if(!settingsFile.open(QFileDevice::WriteOnly))
+    {
+        QMessageBox::warning(this, "ERROR",
+                             "Failed to open specified file for writing."
+                             );
+        return false;
+    }
+    else
+    {
+        QTextStream out(&settingsFile);
+        out << stringify(plottingDefaults.antiAliasing) << "=" << plottingDefaults.antiAliasing << "\n";
+        out << stringify(plottingDefaults.dataPoints) << "=" << plottingDefaults.dataPoints << "\n";
+        out << stringify(plottingDefaults.frameRate) << "=" << plottingDefaults.frameRate << "\n";
+        out << stringify(collectionDefaults.autoscroll) << "=" << collectionDefaults.autoscroll << "\n";
+        out << stringify(collectionDefaults.displayValues) << "=" << collectionDefaults.displayValues << "\n";
+        out << stringify(collectionDefaults.frameRate) << "=" << collectionDefaults.frameRate << "\n";
+        out << stringify(collectionDefaults.refreshRate) << "=" << collectionDefaults.refreshRate << "\n";
+        out << stringify(collectionDefaults.syntaxHighlighting) << "=" << collectionDefaults.syntaxHighlighting << "\n";
+
+        settingsFile.close();
+        QMessageBox::information(this, "Notification",
+                             "Settings successfully saved."
+                             );
+        return true;
+
+    }
+}
+
+void DAQWindow::loadPlottingAndCollectionDefaults()
+{
+//    QString filename = "settings.DAQ";
+//    QFile settingsFile(filename,this);
+//    if(!settingsFile.exists())
+//    {
+//        return;
+//    }
+
+//    if (!settingsFile.open(QFileDevice::ReadOnly))
+//    {
+//        QMessageBox::warning(this, "ERROR",
+//                             "Failed to open existing default settings file."
+//                             );
+//        return;
+//    }
+//    else
+//    {
+//        QTextStream in(&settingsFile);
+//        QString errorMessage;
+//        while(!in.atEnd())
+//        {
+//            QString line = in.readLine();
+//            line.remove(QRegExp("[[:space:]]"));
+//            QStringList settingsPair = line.split('=');
+//            QString key = settingsPair.at(0);
+//            QString value = settingsPair.at(1);
+
+//            switch(key)
+//            {
+//            case(stringify(plottingDefaults.antiAliasing)):
+//                if(value.compare("true", Qt::CaseInsensitive))
+//                {
+//                    plottingDefaults.antiAliasing = true;
+//                }
+//                else if(value.compare("false", Qt::CaseInsensitive))
+//                {
+//                    plottingDefaults.antiAliasing = false
+//                }
+//                else
+//                {
+//                    errorMessage += "Invalid value \'" + value + "\' for " + key + "\n";
+//                }
+//                break;
+//            }
+//        }
+//        settingsFile.close();
+//        return;
+//    }
+}
+
+int DAQWindow::getPlottingDefaultFrameRate()
+{
+    return plottingDefaults.frameRate;
+}
+
+int DAQWindow::getPlottingDefaultDataPoints()
+{
+    return plottingDefaults.dataPoints;
+}
+
+bool DAQWindow::getCollectionDefaultAutoscroll()
+{
+    return collectionDefaults.autoscroll;
+}
+
+bool DAQWindow::getCollectionDefaultDisplayValues()
+{
+    return collectionDefaults.displayValues;
+}
+
+int DAQWindow::getCollectionDefaultFrameRate()
+{
+    return collectionDefaults.frameRate;
+}
+
+int DAQWindow::getCollectionDefaultRefreshRate()
+{
+    return collectionDefaults.refreshRate;
+}
+
+bool DAQWindow::getCollectionDefaultSyntaxHighlighting()
+{
+    return collectionDefaults.syntaxHighlighting;
 }

@@ -53,9 +53,9 @@
 PlotWindow::PlotWindow(QWidget* parent, DAQWindow* DAQparent) :
   QMainWindow(parent),
   ui(new Ui::PlotWindow),
-  m_xData(DEFAULT_MAX_PLOTTED_POINTS),
-  m_yData(DEFAULT_MAX_PLOTTED_POINTS),
-  measuredFrameRate(DEFAULT_FRAME_RATE)
+  m_xData(DAQparent->getPlottingDefaultDataPoints()),
+  m_yData(DAQparent->getPlottingDefaultDataPoints()),
+  measuredFrameRate(DAQparent->getPlottingDefaultFrameRate())
 {
   ui->setupUi(this);
   setWindowIcon(QIcon(DEFAULT_LOGO_FILEPATH));
@@ -78,7 +78,7 @@ PlotWindow::PlotWindow(QWidget* parent, DAQWindow* DAQparent) :
   time = new QTime;
   time->start();
   lastTime = time->elapsed();
-  frameRate = DEFAULT_FRAME_RATE;
+  frameRate = DAQparent->getPlottingDefaultFrameRate();
   secPerFrame = 1.0 / frameRate;
 
   timer = new QTimer();
