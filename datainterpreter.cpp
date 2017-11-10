@@ -1,5 +1,6 @@
 #include "datainterpreter.h"
 #include <QString>
+#include <float.h>
 
 QString DataInterpreter::getString()
 {

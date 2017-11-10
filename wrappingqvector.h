@@ -32,15 +32,15 @@ void WrappingQVector<T>::push(QVector<T> in)
 {
     for (int i = 0; i < in.size(); i++)
     {
-        if (size() < maxSize() && pos == 0)
+        if (in.size() < maxSize() && pos == 0)
         {
-            push_back(in[i]);
+            in.push_back(in[i]);
         }
-        else if (size() <= maxSize())
+        else if (in.size() <= maxSize())
         {
             (*this)[pos] = in[i];
             pos++;
-            if (pos >= size())
+            if (pos >= in.size())
             {
                 pos = 0;
             }
@@ -49,15 +49,15 @@ void WrappingQVector<T>::push(QVector<T> in)
         {
             (*this)[pos] = in[i];
             pos++;
-            if (pos + size() - maxSize() <= size())
+            if (pos + in.size() - maxSize() <= in.size())
             {
-                erase(begin() + pos, begin() + pos + size() - maxSize());
+                in.erase(in.begin() + pos, in.begin() + pos + in.size() - maxSize());
             }
             else
             {
-                erase(begin() + pos, end());
+                in.erase(in.begin() + pos, in.end());
             }
-            if (pos >= size())
+            if (pos >= in.size())
             {
                 pos = 0;
             }
@@ -68,15 +68,15 @@ void WrappingQVector<T>::push(QVector<T> in)
 template<typename T>
 void WrappingQVector<T>::push(T in)
 {
-    if (size() < maxSize() && pos == 0)
+    if (this->size() < maxSize() && pos == 0)
     {
-        push_back(in);
+        this->push_back(in);
     }
-    else if (size() <= maxSize())
+    else if (this->size() <= maxSize())
     {
         (*this)[pos] = in;
         pos++;
-        if (pos >= size())
+        if (pos >= this->size())
         {
             pos = 0;
         }
@@ -85,15 +85,15 @@ void WrappingQVector<T>::push(T in)
     {
         (*this)[pos] = in;
         pos++;
-        if (pos + size() - maxSize() <= size())
+        if (pos + this->size() - maxSize() <= this->size())
         {
-            erase(begin() + pos, begin() + pos + size() - maxSize());
+            this->erase(this->begin() + pos, this->begin() + pos + this->size() - maxSize());
         }
         else
         {
-            erase(begin() + pos, end());
+            this->erase(this->begin() + pos, this->end());
         }
-        if (pos >= size())
+        if (pos >= this->size())
         {
             pos = 0;
         }
